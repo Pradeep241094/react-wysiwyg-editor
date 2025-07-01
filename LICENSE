@@ -1,0 +1,49 @@
+MIT License
+
+Copyright (c) 2024 Pradeep Margasahayam Prakash
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Acknowledgments
+
+This project builds upon several excellent open source libraries:
+
+- **React** (MIT License) - A JavaScript library for building user interfaces
+  Copyright (c) Facebook, Inc. and its affiliates.
+
+- **marked** (MIT License) - A markdown parser and compiler
+  Copyright (c) 2018+, MarkedJS contributors
+
+- **DOMPurify** (Apache License 2.0 / Mozilla Public License 2.0) - DOM-only XSS sanitizer
+  Copyright (c) 2015 Mario Heiderich
+
+- **html2canvas** (MIT License) - Screenshots with JavaScript
+  Copyright (c) 2012 Niklas von Hertzen
+
+- **react-image-crop** (ISC License) - A responsive image cropping tool for React
+  Copyright (c) 2014 Dominic Tobias
+
+- **clsx** (MIT License) - A tiny utility for constructing className strings conditionally
+  Copyright (c) Luke Edwards
+
+We are grateful to the maintainers and contributors of these projects for their excellent work
+that makes this WYSIWYG editor possible.
+
