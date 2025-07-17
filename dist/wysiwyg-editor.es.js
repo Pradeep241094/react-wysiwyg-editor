@@ -129,7 +129,7 @@ function Nt() {
         }
       return null;
     }
-    var X = Object.assign, ae = 0, ue, ce, Ee, Pe, he, He, Ne;
+    var Z = Object.assign, ae = 0, ue, ce, Ee, Pe, he, He, Ne;
     function Be() {
     }
     Be.__reactDisabledLog = !0;
@@ -165,25 +165,25 @@ function Nt() {
             writable: !0
           };
           Object.defineProperties(console, {
-            log: X({}, n, {
+            log: Z({}, n, {
               value: ue
             }),
-            info: X({}, n, {
+            info: Z({}, n, {
               value: ce
             }),
-            warn: X({}, n, {
+            warn: Z({}, n, {
               value: Ee
             }),
-            error: X({}, n, {
+            error: Z({}, n, {
               value: Pe
             }),
-            group: X({}, n, {
+            group: Z({}, n, {
               value: he
             }),
-            groupCollapsed: X({}, n, {
+            groupCollapsed: Z({}, n, {
               value: He
             }),
-            groupEnd: X({}, n, {
+            groupEnd: Z({}, n, {
               value: Ne
             })
           });
@@ -260,18 +260,18 @@ function Nt() {
         if (ie && T && typeof ie.stack == "string") {
           for (var A = ie.stack.split(`
 `), se = T.stack.split(`
-`), J = A.length - 1, V = se.length - 1; J >= 1 && V >= 0 && A[J] !== se[V]; )
-            V--;
-          for (; J >= 1 && V >= 0; J--, V--)
-            if (A[J] !== se[V]) {
-              if (J !== 1 || V !== 1)
+`), J = A.length - 1, X = se.length - 1; J >= 1 && X >= 0 && A[J] !== se[X]; )
+            X--;
+          for (; J >= 1 && X >= 0; J--, X--)
+            if (A[J] !== se[X]) {
+              if (J !== 1 || X !== 1)
                 do
-                  if (J--, V--, V < 0 || A[J] !== se[V]) {
+                  if (J--, X--, X < 0 || A[J] !== se[X]) {
                     var de = `
 ` + A[J].replace(" at new ", " at ");
                     return n.displayName && de.includes("<anonymous>") && (de = de.replace("<anonymous>", n.displayName)), typeof n == "function" && fe.set(n, de), de;
                   }
-                while (J >= 1 && V >= 0);
+                while (J >= 1 && X >= 0);
               break;
             }
         }
@@ -456,8 +456,8 @@ function Nt() {
             F[z] === void 0 && (F[z] = J[z]);
         }
         if (A || se) {
-          var V = typeof n == "function" ? n.displayName || n.name || "Unknown" : n;
-          A && ot(F, V), se && st(F, V);
+          var X = typeof n == "function" ? n.displayName || n.name || "Unknown" : n;
+          A && ot(F, X), se && st(F, X);
         }
         return at(n, A, se, M, T, Ge.current, F);
       }
@@ -573,7 +573,7 @@ Check the top-level render call using <` + b + ">.");
       }
     }
     var ne = {};
-    function Q(n, m, b, T, M, z) {
+    function V(n, m, b, T, M, z) {
       {
         var F = P(n);
         if (!F) {
@@ -584,9 +584,9 @@ Check the top-level render call using <` + b + ">.");
           var J;
           n === null ? J = "null" : Oe(n) ? J = "array" : n !== void 0 && n.$$typeof === e ? (J = "<" + (W(n.type) || "Unknown") + " />", A = " Did you accidentally export a JSX literal instead of a component?") : J = typeof n, R("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", J, A);
         }
-        var V = it(n, m, b, M, z);
-        if (V == null)
-          return V;
+        var X = it(n, m, b, M, z);
+        if (X == null)
+          return X;
         if (F) {
           var de = m.children;
           if (de !== void 0)
@@ -614,16 +614,16 @@ React keys must be passed directly to JSX without using spread:
   <%s key={someKey} {...props} />`, ct, Ce, vt, Ce), ne[Ce + ct] = !0;
           }
         }
-        return n === o ? re(V) : $(V), V;
+        return n === o ? re(X) : $(X), X;
       }
     }
-    function Z(n, m, b) {
-      return Q(n, m, b, !0);
+    function Q(n, m, b) {
+      return V(n, m, b, !0);
     }
     function oe(n, m, b) {
-      return Q(n, m, b, !1);
+      return V(n, m, b, !1);
     }
-    var me = oe, ee = Z;
+    var me = oe, ee = Q;
     Me.Fragment = o, Me.jsx = me, Me.jsxs = ee;
   }()), Me;
 }
@@ -1332,8 +1332,8 @@ const Mt = new Ut(), Pt = ({
     for (; Y.firstChild; )
       W.appendChild(Y.firstChild);
     if (H.insertNode(W), H.collapse(!1), P.removeAllRanges(), P.addRange(H), i.current) {
-      const X = i.current.innerHTML;
-      t(g(X));
+      const Z = i.current.innerHTML;
+      t(g(Z));
     }
   }, U = (I) => {
     const H = I.target.closest("a[href]");
@@ -1351,13 +1351,13 @@ const Mt = new Ut(), Pt = ({
     const H = P.getRangeAt(0), Y = H.startContainer.nodeType === Node.TEXT_NODE ? H.startContainer.parentElement : H.startContainer, W = Y == null ? void 0 : Y.closest("li");
     if (!W)
       return !1;
-    const X = W.closest("ul, ol");
-    return X && (((ue = W.textContent) == null ? void 0 : ue.trim()) === "" || H.startOffset === 0 && ((ce = W.textContent) == null ? void 0 : ce.trim()) === "") ? (I.preventDefault(), G(W, X), !0) : !1;
+    const Z = W.closest("ul, ol");
+    return Z && (((ue = W.textContent) == null ? void 0 : ue.trim()) === "" || H.startOffset === 0 && ((ce = W.textContent) == null ? void 0 : ce.trim()) === "") ? (I.preventDefault(), G(W, Z), !0) : !1;
   }, G = (I, P) => {
-    var W, X;
+    var W, Z;
     I.remove();
     const H = document.createElement("p");
-    H.innerHTML = "<br>", P.nextSibling ? (W = P.parentNode) == null || W.insertBefore(H, P.nextSibling) : (X = P.parentNode) == null || X.appendChild(H);
+    H.innerHTML = "<br>", P.nextSibling ? (W = P.parentNode) == null || W.insertBefore(H, P.nextSibling) : (Z = P.parentNode) == null || Z.appendChild(H);
     const Y = window.getSelection();
     if (Y) {
       const ae = document.createRange();
@@ -4080,7 +4080,7 @@ const ge = ft.getInstance(), rr = ({
   onFocus: o,
   onBlur: l
 }) => {
-  const [i, a] = E(s), [u, d] = E(!1), [p, c] = E(/* @__PURE__ */ new Set()), [h, v] = E(!1), [x, _] = E(!1), [g, j] = E(!1), [D, R] = E(!1), [S, U] = E(""), [k, w] = E("image"), [G, q] = E(null), [I, P] = E([]), [H, Y] = E(!1), [W, X] = E(!1), [ae, ue] = E(!1), [ce, Ee] = E("create"), [Pe, he] = E(""), [He, Ne] = E(!1), [Be, $e] = E(!1), [Se, Ie] = E({
+  const [i, a] = E(s), [u, d] = E(!1), [p, c] = E(/* @__PURE__ */ new Set()), [h, v] = E(!1), [x, _] = E(!1), [g, j] = E(!1), [D, R] = E(!1), [S, U] = E(""), [k, w] = E("image"), [G, q] = E(null), [I, P] = E([]), [H, Y] = E(!1), [W, Z] = E(!1), [ae, ue] = E(!1), [ce, Ee] = E("create"), [Pe, he] = E(""), [He, Ne] = E(!1), [Be, $e] = E(!1), [Se, Ie] = E({
     title: "",
     message: "",
     type: "info"
@@ -4194,7 +4194,7 @@ const ge = ft.getInstance(), rr = ({
         const y = N.current.innerHTML;
         a(y), t == null || t(y), K();
       }
-    }, 0)) : (console.warn("Special character insertion failed:", C.error), B("Special character insertion failed")), X(!1);
+    }, 0)) : (console.warn("Special character insertion failed:", C.error), B("Special character insertion failed")), Z(!1);
   }, [t, K, B]), Ve = L((f) => {
     if (!N.current) return;
     if (xe && ce === "create") {
@@ -4252,7 +4252,11 @@ const ge = ft.getInstance(), rr = ({
     if (!N.current) return;
     const O = window.getSelection();
     let $ = null;
-    if (O && O.rangeCount > 0 && ($ = O.getRangeAt(0).cloneRange()), f === "insertImage") {
+    if (O && O.rangeCount > 0) {
+      const V = O.getRangeAt(0);
+      typeof V.cloneRange == "function" && ($ = V.cloneRange());
+    }
+    if (f === "insertImage") {
       w("image"), R(!0);
       return;
     }
@@ -4265,7 +4269,7 @@ const ge = ft.getInstance(), rr = ({
       return;
     }
     if (f === "insertSpecialChar") {
-      X(!0);
+      Z(!0);
       return;
     }
     if (f === "createLink") {
@@ -4273,10 +4277,10 @@ const ge = ft.getInstance(), rr = ({
       return;
     }
     if (f === "editLink") {
-      const Q = window.getSelection();
-      let Z = null;
-      if (Q && Q.rangeCount > 0) {
-        const oe = Q.getRangeAt(0), me = (ee) => {
+      const V = window.getSelection();
+      let Q = null;
+      if (V && V.rangeCount > 0) {
+        const oe = V.getRangeAt(0), me = (ee) => {
           var n;
           if (ee.nodeType === Node.TEXT_NODE)
             return ((n = ee.parentElement) == null ? void 0 : n.closest("a")) || null;
@@ -4286,25 +4290,25 @@ const ge = ft.getInstance(), rr = ({
           }
           return null;
         };
-        if (Z = me(oe.startContainer), !Z && !Q.isCollapsed) {
+        if (Q = me(oe.startContainer), !Q && !V.isCollapsed) {
           const ee = me(oe.endContainer);
-          ee && (Z = ee);
+          ee && (Q = ee);
         }
-        if (Z || (Z = me(oe.commonAncestorContainer)), !Z && N.current) {
+        if (Q || (Q = me(oe.commonAncestorContainer)), !Q && N.current) {
           const ee = N.current.querySelectorAll("a[href]");
           for (const n of Array.from(ee))
             if (oe.intersectsNode(n)) {
-              Z = n;
+              Q = n;
               break;
             }
         }
       }
-      if (!Z && N.current) {
+      if (!Q && N.current) {
         const oe = N.current.querySelectorAll("a[href]");
-        oe.length === 1 && (Z = oe[0]);
+        oe.length === 1 && (Q = oe[0]);
       }
-      if (Z && Z.href) {
-        he(Z.href), Ee("edit"), ue(!0);
+      if (Q && Q.href) {
+        he(Q.href), Ee("edit"), ue(!0);
         return;
       }
       we("Edit Link", "Please place your cursor on a link to edit it, or select the link text first", "info");
@@ -4349,23 +4353,23 @@ const ge = ft.getInstance(), rr = ({
       removeFormat: "REMOVE_FORMAT"
     }[f];
     if (f === "formatBlock" && C && (ne = `FORMAT_${C}`), ne) {
-      const Q = ge.executeCommand(ne, C, N.current);
-      if (Q.success) {
-        const Z = _e(f, C), me = p.has(ne) ? "removed" : "applied";
-        B(`${Z} ${me}`), setTimeout(() => {
+      const V = ge.executeCommand(ne, C, N.current);
+      if (V.success) {
+        const Q = _e(f, C), me = p.has(ne) ? "removed" : "applied";
+        B(`${Q} ${me}`), setTimeout(() => {
           if (N.current) {
             const ee = N.current.innerHTML;
             a(ee), t == null || t(ee), K();
           }
         }, 0);
       } else
-        console.warn("Command execution failed:", Q.error), B("Command failed");
+        console.warn("Command execution failed:", V.error), B("Command failed");
     }
   }, [t, K, p, _e, B]), Xe = L((f) => {
     if (!u) return;
     const { ctrlKey: C, metaKey: y, key: O, shiftKey: $ } = f;
     if (!(C || y)) return;
-    const Q = {
+    const V = {
       b: { command: "bold" },
       i: { command: "italic" },
       u: { command: "underline" },
@@ -4380,7 +4384,7 @@ const ge = ft.getInstance(), rr = ({
       r: { command: "justifyRight" },
       "\\": { command: "removeFormat" }
     }[O.toLowerCase()];
-    Q && (f.preventDefault(), ve(Q.command, Q.value, !0));
+    V && (f.preventDefault(), ve(V.command, V.value, !0));
   }, [u, ve]), pe = L((f) => {
     a(f), t == null || t(f), setTimeout(K, 0);
   }, [t, K]), Fe = L((f) => {
@@ -4419,12 +4423,12 @@ const ge = ft.getInstance(), rr = ({
       if ($ && $.includes("<img")) {
         const ne = window.getSelection();
         if (ne && ne.rangeCount > 0) {
-          const Q = ne.getRangeAt(0), Z = document.createElement("div");
-          Z.innerHTML = $;
-          const oe = Z.querySelector("img");
+          const V = ne.getRangeAt(0), Q = document.createElement("div");
+          Q.innerHTML = $;
+          const oe = Q.querySelector("img");
           if (oe) {
             const me = f.querySelector(`img[src="${oe.src}"]`);
-            me && me !== oe && me.remove(), Q.deleteContents(), Q.insertNode(oe);
+            me && me !== oe && me.remove(), V.deleteContents(), V.insertNode(oe);
             const ee = f.innerHTML;
             a(ee), t == null || t(ee);
           }
@@ -4510,7 +4514,7 @@ const ge = ft.getInstance(), rr = ({
           Wt,
           {
             isOpen: W,
-            onClose: () => X(!1),
+            onClose: () => Z(!1),
             onInsert: Je
           }
         ),

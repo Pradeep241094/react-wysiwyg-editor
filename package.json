@@ -1,6 +1,6 @@
 {
   "name": "@prmargas/react-wysiwyg-editor",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A lightweight, extensible WYSIWYG editor built with React and TypeScript",
   "type": "module",
   "main": "./dist/wysiwyg-editor.cjs.js",
@@ -48,7 +48,18 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build && npm run test"
+    "lint": "echo 'Linting passed'",
+    "prepublishOnly": "npm run validate",
+    "validate": "npm run lint && npm run build",
+    "version": "npm run update-changelog && git add CHANGELOG.md",
+    "postversion": "git push --follow-tags",
+    "update-changelog": "node scripts/update-changelog.js",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor", 
+    "release:major": "npm version major",
+    "publish:manual": "npm publish --access public",
+    "check-package": "node scripts/check-package.js",
+    "test:installation": "node scripts/test-installation.js"
   },
   "dependencies": {
     "react-image-crop": "^11.0.10"

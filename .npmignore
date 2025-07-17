@@ -1,0 +1,76 @@
+# Source files
+src/
+demo-app/
+scripts/
+
+# Development files
+.vscode/
+.kiro/
+.github/
+node_modules/
+
+# Test files
+**/*.test.*
+**/__tests__/
+test-*.html
+debug-*.html
+integration-test.html
+
+# Build configuration
+vite.config.ts
+vite.demo.config.ts
+vitest.config.ts
+tsconfig.json
+tsconfig.lib.json
+tsconfig.node.json
+tailwind.config.js
+postcss.config.js
+
+# Development HTML files
+index.html
+demo-library.html
+
+# Documentation (except README and LICENSE)
+EXAMPLES.md
+TROUBLESHOOTING.md
+
+# Git files
+.gitignore
+.git/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
