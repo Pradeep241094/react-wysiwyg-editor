@@ -2,7 +2,6 @@
 
 ![React](https://img.shields.io/badge/React-18.2.0-61dafb.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-3178c6.svg)
-![Tailwind](https://img.shields.io/badge/Tailwind-3.4.1-06b6d4.svg)
 
 A powerful, modern **What You See Is What You Get** editor built with React, TypeScript, and React Router. Features dual-mode editing (WYSIWYG + Markdown), advanced image handling, and a streamlined user interface with full-page preview functionality.
 
