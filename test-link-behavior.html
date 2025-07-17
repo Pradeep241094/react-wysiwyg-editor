@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Behavior Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .test-link {
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .test-link:hover {
+            color: #1d4ed8;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Link Behavior Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Link with target="_blank"</h2>
+        <p>This link should open in a new tab: <a href="https://example.com" target="_blank" rel="noopener noreferrer" class="test-link">Example.com (New Tab)</a></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Link without target="_blank"</h2>
+        <p>This link should open in the same tab: <a href="https://example.com" class="test-link">Example.com (Same Tab)</a></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Programmatically Created Link</h2>
+        <p>Click the button to create a link: <button onclick="createTestLink()">Create Link</button></p>
+        <div id="link-container"></div>
+        <div class="result" id="link-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Document.execCommand Link</h2>
+        <p>Select text and click button: <span id="test-text">Select this text</span> <button onclick="createExecCommandLink()">Create Link with execCommand</button></p>
+        <div class="result" id="exec-result"></div>
+    </div>
+
+    <script>
+        function createTestLink() {
+            const container = document.getElementById('link-container');
+            const result = document.getElementById('link-result');
+            
+            // Create link element
+            const link = document.createElement('a');
+            link.href = 'https://google.com';
+            link.textContent = 'Google (Programmatically Created)';
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.className = 'test-link';
+            
+            container.innerHTML = '';
+            container.appendChild(link);
+            
+            result.innerHTML = `Link created with attributes: target="${link.target}", rel="${link.rel}"`;
+        }
+        
+        function createExecCommandLink() {
+            const textSpan = document.getElementById('test-text');
+            const result = document.getElementById('exec-result');
+            
+            // Select the text
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(textSpan);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            // Create link using execCommand
+            const success = document.execCommand('createLink', false, 'https://github.com');
+            
+            if (success) {
+                // Try to find and modify the created link
+                setTimeout(() => {
+                    const links = textSpan.querySelectorAll('a');
+                    if (links.length > 0) {
+                        const link = links[0];
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.className = 'test-link';
+                        result.innerHTML = `Link created and modified: target="${link.target}", rel="${link.rel}"`;
+                    } else {
+                        result.innerHTML = 'Link created but could not find it to modify';
+                    }
+                }, 0);
+            } else {
+                result.innerHTML = 'Failed to create link with execCommand';
+            }
+        }
+    </script>
+</body>
+</html>

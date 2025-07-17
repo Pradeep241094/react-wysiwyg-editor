@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Color Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-editor { 
+            border: 2px solid #ccc; 
+            padding: 15px; 
+            min-height: 100px; 
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .test-editor:focus { outline: 2px solid #007cba; }
+        .color-buttons { margin: 10px 0; }
+        .color-btn { 
+            padding: 8px 12px; 
+            margin: 5px; 
+            border: 1px solid #ccc; 
+            background: white; 
+            cursor: pointer; 
+            border-radius: 4px;
+        }
+        .color-btn:hover { background: #f0f0f0; }
+        .instructions { 
+            background: #f9f9f9; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Functionality Test</h1>
+    
+    <div class="instructions">
+        <h3>Test Steps:</h3>
+        <ol>
+            <li>Type some text in the editor below</li>
+            <li>Select the text you want to color</li>
+            <li>Click one of the color buttons</li>
+            <li>Continue typing to see if the color persists</li>
+        </ol>
+    </div>
+
+    <div class="color-buttons">
+        <button class="color-btn" onclick="applyColor('foreColor', '#ff0000')">Red Text</button>
+        <button class="color-btn" onclick="applyColor('foreColor', '#00ff00')">Green Text</button>
+        <button class="color-btn" onclick="applyColor('foreColor', '#0000ff')">Blue Text</button>
+        <button class="color-btn" onclick="applyColor('backColor', '#ffff00')">Yellow Background</button>
+        <button class="color-btn" onclick="applyColor('backColor', '#ff00ff')">Magenta Background</button>
+        <button class="color-btn" onclick="applyColor('backColor', '#00ffff')">Cyan Background</button>
+    </div>
+
+    <div class="test-editor" contenteditable="true" id="editor">
+        Type your text here and then select it to apply colors...
+    </div>
+
+    <div id="status" style="margin-top: 10px; padding: 10px; background: #e9e9e9; border-radius: 4px;">
+        Status: Ready
+    </div>
+
+    <script>
+        function applyColor(command, color) {
+            const editor = document.getElementById('editor');
+            const status = document.getElementById('status');
+            
+            // Focus the editor
+            editor.focus();
+            
+            // Get current selection
+            const selection = window.getSelection();
+            const selectedText = selection.toString();
+            
+            status.innerHTML = `Applying ${command} with color ${color}. Selected text: "${selectedText}"`;
+            
+            try {
+                // Apply the color command
+                const result = document.execCommand(command, false, color);
+                
+                if (result) {
+                    status.innerHTML += `<br>✅ Command executed successfully!`;
+                } else {
+                    status.innerHTML += `<br>❌ Command failed to execute.`;
+                }
+            } catch (error) {
+                status.innerHTML += `<br>❌ Error: ${error.message}`;
+            }
+            
+            // Keep focus on editor
+            setTimeout(() => editor.focus(), 100);
+        }
+
+        // Focus editor on load
+        document.getElementById('editor').focus();
+    </script>
+</body>
+</html>

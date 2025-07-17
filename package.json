@@ -1,0 +1,77 @@
+{
+  "name": "@prmargas/react-wysiwyg-editor",
+  "version": "0.0.3",
+  "description": "A lightweight, extensible WYSIWYG editor built with React and TypeScript",
+  "type": "module",
+  "main": "./dist/wysiwyg-editor.cjs.js",
+  "module": "./dist/wysiwyg-editor.es.js",
+  "types": "./dist/types/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/wysiwyg-editor.es.js",
+      "require": "./dist/wysiwyg-editor.cjs.js",
+      "types": "./dist/types/lib/index.d.ts"
+    },
+    "./styles": "./dist/wysiwyg-editor.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "wysiwyg",
+    "editor",
+    "rich-text",
+    "contenteditable",
+    "typescript",
+    "text-editor",
+    "html-editor"
+  ],
+  "author": "Pradeep Margasahayam Prakash",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pradeep241094/react-wysiwyg-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pradeep241094/react-wysiwyg-editor/issues"
+  },
+  "homepage": "https://github.com/Pradeep241094/react-wysiwyg-editor#readme",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run build:lib && npm run build:types",
+    "build:lib": "vite build",
+    "build:types": "tsc --project tsconfig.lib.json",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "dependencies": {
+    "react-image-crop": "^11.0.10"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.6.0",
+    "autoprefixer": "^10.4.21",
+    "jsdom": "^23.0.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.2.2",
+    "vite": "^5.4.19",
+    "vitest": "^1.0.0"
+  }
+}

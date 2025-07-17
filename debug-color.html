@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Color Picker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .color-button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .color-button:hover {
+            background: #f0f0f0;
+        }
+        .color-picker {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin: 10px 0;
+        }
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .color-swatch:hover {
+            border: 2px solid #333;
+        }
+        .editor {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 100px;
+            margin: 10px 0;
+        }
+        .editor[contenteditable="true"]:focus {
+            outline: 2px solid #007cba;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Picker Debug Test</h1>
+    
+    <div class="debug-section">
+        <h2>Step 1: Test Basic Color Commands</h2>
+        <button class="color-button" onclick="testForeColor('#ff0000')">Set Text Red</button>
+        <button class="color-button" onclick="testForeColor('#00ff00')">Set Text Green</button>
+        <button class="color-button" onclick="testBackColor('#ffff00')">Set Background Yellow</button>
+        <button class="color-button" onclick="testBackColor('#ff00ff')">Set Background Magenta</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>Step 2: Test Color Picker Interface</h2>
+        <button class="color-button" onclick="toggleColorPicker()">Toggle Color Picker</button>
+        
+        <div id="colorPicker" class="color-picker" style="display: none;">
+            <h3>Text Color</h3>
+            <div class="color-grid" id="textColorGrid"></div>
+            
+            <h3>Background Color</h3>
+            <div class="color-grid" id="bgColorGrid"></div>
+            
+            <h3>Custom Color</h3>
+            <input type="color" onchange="applyCustomColor(this.value, 'text')" />
+            <input type="color" onchange="applyCustomColor(this.value, 'background')" />
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Step 3: Test Editor</h2>
+        <div class="editor" contenteditable="true" id="testEditor">
+            Type some text here, select it, and try the color buttons above.
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Debug Info</h2>
+        <div id="debugInfo"></div>
+    </div>
+
+    <script>
+        const colors = [
+            '#000000', '#424242', '#636363', '#9C9C94', '#CEC6CE', '#EFEFEF', '#F7F7F7', '#FFFFFF',
+            '#FF0000', '#FF9C00', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#9C00FF', '#FF00FF',
+            '#F7C6CE', '#FFE7CE', '#FFEFC6', '#D6EFD6', '#CEDEE7', '#CEE7F7', '#D6D6E7', '#E7D6DE'
+        ];
+
+        function log(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+
+        function testForeColor(color) {
+            log('Testing foreColor with: ' + color);
+            const editor = document.getElementById('testEditor');
+            editor.focus();
+            
+            const selection = window.getSelection();
+            log('Selection: ' + (selection ? selection.toString() : 'none'));
+            
+            const result = document.execCommand('foreColor', false, color);
+            log('foreColor result: ' + result);
+        }
+
+        function testBackColor(color) {
+            log('Testing backColor with: ' + color);
+            const editor = document.getElementById('testEditor');
+            editor.focus();
+            
+            const selection = window.getSelection();
+            log('Selection: ' + (selection ? selection.toString() : 'none'));
+            
+            const result = document.execCommand('backColor', false, color);
+            log('backColor result: ' + result);
+        }
+
+        function toggleColorPicker() {
+            const picker = document.getElementById('colorPicker');
+            if (picker.style.display === 'none') {
+                picker.style.display = 'block';
+                createColorGrids();
+            } else {
+                picker.style.display = 'none';
+            }
+        }
+
+        function createColorGrids() {
+            const textGrid = document.getElementById('textColorGrid');
+            const bgGrid = document.getElementById('bgColorGrid');
+            
+            textGrid.innerHTML = '';
+            bgGrid.innerHTML = '';
+            
+            colors.forEach(color => {
+                // Text color swatches
+                const textSwatch = document.createElement('div');
+                textSwatch.className = 'color-swatch';
+                textSwatch.style.backgroundColor = color;
+                textSwatch.title = color;
+                textSwatch.onclick = () => applyColor(color, 'text');
+                textGrid.appendChild(textSwatch);
+                
+                // Background color swatches
+                const bgSwatch = document.createElement('div');
+                bgSwatch.className = 'color-swatch';
+                bgSwatch.style.backgroundColor = color;
+                bgSwatch.title = color;
+                bgSwatch.onclick = () => applyColor(color, 'background');
+                bgGrid.appendChild(bgSwatch);
+            });
+        }
+
+        function applyColor(color, type) {
+            log('Applying ' + type + ' color: ' + color);
+            const editor = document.getElementById('testEditor');
+            editor.focus();
+            
+            if (type === 'text') {
+                const result = document.execCommand('foreColor', false, color);
+                log('foreColor result: ' + result);
+            } else {
+                const result = document.execCommand('backColor', false, color);
+                log('backColor result: ' + result);
+            }
+        }
+
+        function applyCustomColor(color, type) {
+            applyColor(color, type);
+        }
+
+        // Focus the editor initially
+        document.getElementById('testEditor').focus();
+        log('Debug page loaded');
+    </script>
+</body>
+</html>

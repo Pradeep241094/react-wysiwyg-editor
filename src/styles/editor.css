@@ -1,0 +1,981 @@
+/* Import Tailwind CSS - if this causes issues, remove these lines and import in main.tsx instead */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* WYSIWYG Editor Styles */
+.wysiwyg-editor {
+  @apply border border-gray-200 rounded-lg bg-white shadow-lg;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Helvetica Neue", Arial, sans-serif;
+  max-width: 100%;
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.wysiwyg-editor:focus-within {
+  @apply ring-2 ring-blue-400 ring-opacity-30 border-blue-300;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Basic Toolbar Styles (Legacy - keeping for compatibility) */
+.toolbar {
+  @apply flex flex-wrap gap-1 p-3 border-b border-gray-200 bg-white rounded-t-lg;
+  background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 48px;
+}
+
+.toolbar .toolbar-button {
+  @apply flex items-center justify-center min-w-8 h-8 px-2 border border-transparent rounded bg-transparent cursor-pointer text-sm font-medium text-gray-700 transition-all duration-200 ease-in-out;
+}
+
+.toolbar .toolbar-button:hover:not(:disabled) {
+  @apply bg-gray-100 border-gray-300 shadow-sm;
+}
+
+.toolbar .toolbar-button:active:not(:disabled) {
+  @apply bg-gray-200 scale-95;
+}
+
+.toolbar .toolbar-button.active {
+  @apply bg-blue-600 text-white border-blue-700 shadow-md;
+}
+
+.toolbar .toolbar-button.active:hover {
+  @apply bg-blue-700 border-blue-800;
+}
+
+.toolbar .toolbar-button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.toolbar .toolbar-button:disabled:hover {
+  @apply bg-transparent border-transparent shadow-none;
+}
+
+/* Toolbar button groups */
+.toolbar-group {
+  @apply flex gap-1 items-center;
+}
+
+.toolbar-separator {
+  @apply w-px h-6 bg-gray-300 mx-1;
+}
+
+/* Editable Area Styles */
+.editable-area-container {
+  @apply relative min-h-48;
+}
+
+.editable-area {
+  @apply min-h-48 p-4 outline-none leading-relaxed text-base text-gray-900 rounded-b-lg;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.editable-area:focus {
+  @apply outline-none;
+  background-color: #ffffff !important;
+  /* Focus styling is handled by the parent container */
+}
+
+.placeholder {
+  @apply absolute top-4 left-4 text-gray-400 text-base pointer-events-none leading-relaxed;
+}
+
+/* Content Formatting Styles */
+.editable-area h1,
+.editable-area h2,
+.editable-area h3 {
+  @apply my-2 font-bold text-gray-900;
+}
+
+.editable-area h1 {
+  @apply text-3xl;
+}
+
+.editable-area h2 {
+  @apply text-2xl;
+}
+
+.editable-area h3 {
+  @apply text-xl;
+}
+
+.editable-area p {
+  @apply my-2;
+}
+
+.editable-area ul,
+.editable-area ol {
+  @apply my-2 pl-8;
+}
+
+.editable-area ul {
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.editable-area ol {
+  list-style-type: decimal;
+  list-style-position: outside;
+}
+
+.editable-area li {
+  @apply my-1;
+  display: list-item;
+}
+
+/* Nested list styles */
+.editable-area ul ul {
+  list-style-type: circle;
+  @apply pl-6;
+}
+
+.editable-area ul ul ul {
+  list-style-type: square;
+}
+
+.editable-area ol ol {
+  list-style-type: lower-alpha;
+  @apply pl-6;
+}
+
+.editable-area ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.editable-area a {
+  @apply text-blue-600 underline hover:text-blue-800 transition-colors duration-200;
+  cursor: pointer;
+}
+
+/* Image styles */
+.editable-area img {
+  @apply max-w-full h-auto my-2 rounded border border-gray-200;
+  display: block;
+  transition: all 0.2s ease;
+}
+
+.editable-area img:hover {
+  @apply border-gray-300 shadow-sm;
+}
+
+/* Enhanced editor image styles */
+.editable-area img.editor-image {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.editable-area img.editor-image:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.editable-area img.editor-image.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Image alignment styles */
+.editable-area img.align-left {
+  display: block;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.editable-area img.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.editable-area img.align-right {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.editable-area img.align-none {
+  display: inline-block;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Image float styles */
+.editable-area img.float-left {
+  float: left;
+  margin-right: 15px;
+  margin-bottom: 10px;
+}
+
+.editable-area img.float-right {
+  float: right;
+  margin-left: 15px;
+  margin-bottom: 10px;
+}
+
+/* Image drag styles */
+.editable-area img.editor-image[draggable="true"] {
+  cursor: move;
+}
+
+.editable-area img.editor-image.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+
+/* File link styles */
+.editable-area a[download] {
+  @apply inline-block px-3 py-2 my-1 bg-gray-100 border border-gray-300 rounded no-underline text-gray-700 hover:bg-gray-200 hover:border-gray-400 transition-all duration-200;
+  text-decoration: none !important;
+}
+
+.editable-area a[download]:hover {
+  @apply text-gray-800;
+}
+
+/* Text alignment classes */
+.editable-area [style*="text-align: left"] {
+  @apply text-left;
+}
+
+.editable-area [style*="text-align: center"] {
+  @apply text-center;
+}
+
+.editable-area [style*="text-align: right"] {
+  @apply text-right;
+}
+
+/* Responsive Design and Mobile Optimizations */
+@media (max-width: 768px) {
+  .wysiwyg-editor {
+    @apply rounded-md shadow-none border-gray-400;
+  }
+
+  .toolbar {
+    @apply p-1.5 gap-0.5 rounded-t-md;
+  }
+
+  .toolbar-button {
+    @apply w-7 h-7 text-xs min-w-7;
+  }
+
+  .editable-area {
+    @apply p-2.5 text-base min-h-40 rounded-b-md;
+    /* Prevent zoom on iOS */
+    font-size: 16px;
+  }
+
+  .placeholder {
+    @apply top-2.5 left-2.5 text-base;
+  }
+
+  /* Adjust content spacing for mobile */
+  .editable-area h1 {
+    @apply text-2xl;
+  }
+
+  .editable-area h2 {
+    @apply text-xl;
+  }
+
+  .editable-area h3 {
+    @apply text-lg;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .toolbar {
+    @apply p-1 gap-px;
+  }
+
+  .toolbar-button {
+    @apply w-6 h-6 text-xs min-w-6;
+  }
+
+  .editable-area {
+    @apply p-2 min-h-36;
+  }
+
+  .placeholder {
+    @apply top-2 left-2;
+  }
+}
+
+/* Accessibility and Focus Styles */
+.toolbar-button:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-1 outline-none;
+}
+
+.editable-area:focus-visible {
+  @apply outline-none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .wysiwyg-editor {
+    @apply border-2 border-black;
+  }
+
+  .toolbar {
+    @apply border-b-2 border-black bg-white;
+  }
+
+  .toolbar-button {
+    @apply border border-gray-600 text-black;
+  }
+
+  .toolbar-button.active {
+    @apply bg-black text-white border-black;
+  }
+
+  .editable-area {
+    @apply text-black;
+  }
+
+  .placeholder {
+    @apply text-gray-600;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .toolbar-button,
+  .wysiwyg-editor,
+  .editable-area a {
+    transition: none;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* React Image Crop Styles Override */
+.ReactCrop {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  touch-action: none;
+}
+
+.ReactCrop *,
+.ReactCrop *::before,
+.ReactCrop *::after {
+  box-sizing: border-box;
+}
+
+.ReactCrop__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ReactCrop__crop-selection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate3d(0, 0, 0);
+  box-sizing: border-box;
+  cursor: move;
+  box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  touch-action: none;
+}
+
+.ReactCrop__drag-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  touch-action: none;
+}
+
+.ReactCrop__drag-handle::after {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 1px;
+  transform: translate(-50%, -50%);
+}
+
+.ReactCrop__drag-handle--n {
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: n-resize;
+}
+
+.ReactCrop__drag-handle--ne {
+  top: -6px;
+  right: -6px;
+  cursor: ne-resize;
+}
+
+.ReactCrop__drag-handle--e {
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  cursor: e-resize;
+}
+
+.ReactCrop__drag-handle--se {
+  bottom: -6px;
+  right: -6px;
+  cursor: se-resize;
+}
+
+.ReactCrop__drag-handle--s {
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}
+
+.ReactCrop__drag-handle--sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: sw-resize;
+}
+
+.ReactCrop__drag-handle--w {
+  top: 50%;
+  left: -6px;
+  transform: translateY(-50%);
+  cursor: w-resize;
+}
+
+.ReactCrop__drag-handle--nw {
+  top: -6px;
+  left: -6px;
+  cursor: nw-resize;
+}
+
+/* Modal backdrop animation */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal content animation */
+.modal-content {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* File upload drag and drop styles */
+.file-upload-area {
+  transition: all 0.2s ease-in-out;
+}
+
+.file-upload-area.drag-over {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+/* Custom scrollbar for modal content */
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Advanced Toolbar Styles */
+.advanced-toolbar {
+  @apply flex flex-wrap items-center gap-1 p-3 border-b border-gray-200 bg-white rounded-t-lg;
+  min-height: 48px;
+  background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.toolbar-group {
+  @apply flex items-center gap-1;
+  position: relative;
+}
+
+.toolbar-group:not(:last-child)::after {
+  content: "";
+  width: 1px;
+  height: 24px;
+  background-color: #d1d5db;
+  margin: 0 8px;
+}
+
+.toolbar-button {
+  @apply flex items-center justify-center min-w-8 h-8 px-2 border border-transparent rounded bg-transparent cursor-pointer text-sm font-medium text-gray-700 transition-all duration-200 ease-in-out;
+  position: relative;
+}
+
+.toolbar-button:hover:not(:disabled) {
+  @apply bg-gray-100 border-gray-300 shadow-sm;
+}
+
+.toolbar-button:active:not(:disabled) {
+  @apply bg-gray-200 scale-95;
+}
+
+.toolbar-button.active {
+  @apply bg-blue-600 text-white border-blue-700 shadow-md;
+}
+
+.toolbar-button.dropdown {
+  @apply pr-6;
+}
+
+.toolbar-button .button-icon {
+  @apply flex items-center justify-center;
+}
+
+.toolbar-button .dropdown-arrow {
+  @apply absolute right-1 text-xs;
+  font-size: 10px;
+}
+
+.toolbar-button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Dropdown Styles */
+.toolbar-dropdown {
+  @apply absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 min-w-48;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  @apply flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.dropdown-item .option-icon {
+  @apply mr-2 w-4 text-center;
+}
+
+.dropdown-item .option-label {
+  @apply flex-1 text-left;
+}
+
+/* Color Picker Styles */
+.toolbar-color-picker {
+  @apply absolute top-full right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl z-50 p-4;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.color-grid {
+  @apply grid grid-cols-12 gap-1 mb-4;
+}
+
+.color-swatch {
+  @apply w-6 h-6 border-2 border-gray-200 rounded-md cursor-pointer transition-all duration-200;
+  min-height: 24px;
+  min-width: 24px;
+  position: relative;
+}
+
+.color-swatch:hover {
+  @apply border-gray-400 shadow-md;
+  transform: scale(1.15);
+  z-index: 10;
+}
+
+.color-swatch:active {
+  transform: scale(0.95);
+}
+
+.color-swatch::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 20;
+}
+
+.color-swatch:hover::after {
+  opacity: 1;
+}
+
+.color-input-section {
+  @apply flex items-center gap-3 pt-3 border-t border-gray-200;
+}
+
+.color-input {
+  @apply w-10 h-10 border-2 border-gray-300 rounded-lg cursor-pointer transition-all duration-200;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+  padding: 0;
+}
+
+.color-input:hover {
+  @apply border-gray-400 shadow-md;
+  transform: scale(1.05);
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+  border: none;
+  border-radius: 6px;
+}
+
+.color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.color-input-label {
+  @apply text-sm text-gray-700 font-medium;
+}
+
+.color-picker-header {
+  @apply flex items-center justify-between mb-3 pb-2 border-b border-gray-200;
+}
+
+.color-picker-title {
+  @apply text-sm font-semibold text-gray-800 m-0;
+}
+
+.color-picker-close {
+  @apply w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-none bg-transparent cursor-pointer text-lg font-bold transition-colors duration-200;
+}
+
+.color-picker-close:hover {
+  @apply bg-gray-100;
+}
+
+.color-remove-btn {
+  @apply px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded cursor-pointer transition-colors duration-200;
+}
+
+.color-remove-btn:hover {
+  @apply bg-gray-200 border-gray-400;
+}
+
+/* Table Styles */
+.editor-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+}
+
+.editor-table th,
+.editor-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  min-width: 50px;
+  min-height: 20px;
+  vertical-align: top;
+}
+
+.editor-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.editor-table td:empty::before {
+  content: "\00a0";
+  color: transparent;
+}
+
+/* Fullscreen Mode */
+.wysiwyg-editor.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: white;
+  border-radius: 0;
+}
+
+.wysiwyg-editor.fullscreen .editable-area {
+  height: calc(100vh - 60px);
+  max-height: none;
+}
+
+/* Source Code Mode */
+.editable-area[data-source-mode="true"] {
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+/* Enhanced Content Styles */
+.editable-area blockquote {
+  @apply border-l-4 border-gray-300 pl-4 my-4 italic text-gray-700;
+}
+
+.editable-area pre {
+  @apply bg-gray-100 p-4 rounded border overflow-x-auto;
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
+}
+
+.editable-area hr {
+  @apply border-0 border-t border-gray-300 my-4;
+}
+
+.editable-area h4 {
+  @apply text-lg font-bold my-2 text-gray-900;
+}
+
+.editable-area h5 {
+  @apply text-base font-bold my-2 text-gray-900;
+}
+
+.editable-area h6 {
+  @apply text-sm font-bold my-2 text-gray-900;
+}
+
+.editable-area sub {
+  @apply text-xs;
+  vertical-align: sub;
+}
+
+.editable-area sup {
+  @apply text-xs;
+  vertical-align: super;
+}
+
+.editable-area del,
+.editable-area s {
+  text-decoration: line-through;
+}
+
+/* Print Styles */
+@media print {
+  .wysiwyg-editor .toolbar,
+  .wysiwyg-editor .advanced-toolbar {
+    display: none;
+  }
+
+  .wysiwyg-editor {
+    border: none;
+    box-shadow: none;
+  }
+
+  .editable-area {
+    padding: 0;
+  }
+}
+
+/* Responsive Toolbar */
+@media (max-width: 768px) {
+  .advanced-toolbar {
+    @apply p-1.5 gap-0.5;
+  }
+
+  .toolbar-button {
+    @apply min-w-7 h-7 text-xs;
+  }
+
+  .toolbar-group:not(:last-child)::after {
+    margin: 0 4px;
+  }
+
+  .toolbar-dropdown {
+    @apply min-w-40;
+  }
+}
+
+/* Force Light Theme - Override any dark mode */
+.wysiwyg-editor {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.wysiwyg-editor .advanced-toolbar,
+.wysiwyg-editor .toolbar {
+  background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%) !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+}
+
+.wysiwyg-editor .editable-area {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.wysiwyg-editor .toolbar-button {
+  color: #374151 !important;
+  background-color: transparent !important;
+}
+
+.wysiwyg-editor .toolbar-button:hover:not(:disabled) {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+}
+
+.wysiwyg-editor .toolbar-button.active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #1d4ed8 !important;
+}
+
+.wysiwyg-editor .placeholder {
+  color: #9ca3af !important;
+}
+
+/* Ensure content styling is always light */
+.wysiwyg-editor .editable-area h1,
+.wysiwyg-editor .editable-area h2,
+.wysiwyg-editor .editable-area h3,
+.wysiwyg-editor .editable-area h4,
+.wysiwyg-editor .editable-area h5,
+.wysiwyg-editor .editable-area h6,
+.wysiwyg-editor .editable-area p,
+.wysiwyg-editor .editable-area div,
+.wysiwyg-editor .editable-area span {
+  color: #1f2937 !important;
+}
+
+.wysiwyg-editor .editable-area a {
+  color: #2563eb !important;
+}
+
+.wysiwyg-editor .editable-area a:hover {
+  color: #1d4ed8 !important;
+}
+
+/* Override any system dark mode preferences for this editor */
+@media (prefers-color-scheme: dark) {
+  .wysiwyg-editor {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    border-color: #e5e7eb !important;
+  }
+
+  .wysiwyg-editor .advanced-toolbar,
+  .wysiwyg-editor .toolbar {
+    background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%) !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #374151 !important;
+  }
+
+  .wysiwyg-editor .toolbar-button {
+    color: #374151 !important;
+    background-color: transparent !important;
+  }
+
+  .wysiwyg-editor .toolbar-button:hover:not(:disabled) {
+    background-color: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+  }
+
+  .wysiwyg-editor .toolbar-button.active {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+  }
+
+  .wysiwyg-editor .editable-area {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+  }
+
+  .wysiwyg-editor .placeholder {
+    color: #9ca3af !important;
+  }
+
+  .wysiwyg-editor .editable-area h1,
+  .wysiwyg-editor .editable-area h2,
+  .wysiwyg-editor .editable-area h3,
+  .wysiwyg-editor .editable-area h4,
+  .wysiwyg-editor .editable-area h5,
+  .wysiwyg-editor .editable-area h6,
+  .wysiwyg-editor .editable-area p,
+  .wysiwyg-editor .editable-area div,
+  .wysiwyg-editor .editable-area span {
+    color: #1f2937 !important;
+  }
+
+  .wysiwyg-editor .editable-area a {
+    color: #2563eb !important;
+  }
+
+  .wysiwyg-editor .editable-area a:hover {
+    color: #1d4ed8 !important;
+  }
+}

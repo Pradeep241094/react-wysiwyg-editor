@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Link Editing Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .test-editor {
+            border: 2px solid #ccc;
+            padding: 15px;
+            min-height: 150px;
+            margin: 15px 0;
+            background: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .test-editor[contenteditable="true"] {
+            outline: none;
+        }
+        .test-editor:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .test-editor a {
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .test-editor a:hover {
+            color: #1d4ed8;
+        }
+        .toolbar {
+            margin: 10px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        button {
+            padding: 10px 15px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .instructions {
+            background: #e0f2fe;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #0288d1;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #0277bd;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+        .result {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        .success {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 Link Editing Test</h1>
+    
+    <div class="instructions">
+        <h3>How to Test Link Editing:</h3>
+        <ol>
+            <li><strong>Create a link:</strong> Select text → Click "Create Link" → Enter URL</li>
+            <li><strong>Edit the link:</strong> Click on the link text → Click "Edit Link" → Modify URL</li>
+            <li><strong>Alternative:</strong> Select the entire link text → Click "Edit Link"</li>
+        </ol>
+    </div>
+    
+    <div class="test-editor" contenteditable="true" id="editor">
+        <p>This is a test editor. Select this text and create a link, then try to edit it.</p>
+        <p>Here's an existing link: <a href="https://example.com" target="_blank" rel="noopener noreferrer">Example.com</a></p>
+    </div>
+    
+    <div class="toolbar">
+        <button onclick="createLink()">🔗 Create Link</button>
+        <button onclick="editLink()">✏️ Edit Link</button>
+        <button onclick="testSelection()">🔍 Debug Selection</button>
+        <button onclick="clearEditor()">🗑️ Clear</button>
+    </div>
+    
+    <div class="result" id="result">Ready to test! Select some text and click "Create Link" to start.</div>
+
+    <script>
+        function testSelection() {
+            const editor = document.getElementById('editor');
+            const result = document.getElementById('result');
+            const selection = window.getSelection();
+            
+            let output = '=== SELECTION DEBUG ===\n';
+            output += `Selection exists: ${!!selection}\n`;
+            output += `Range count: ${selection?.rangeCount || 0}\n`;
+            output += `Is collapsed: ${selection?.isCollapsed}\n`;
+            
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                output += `\n=== RANGE INFO ===\n`;
+                output += `Start: ${range.startContainer.nodeType === Node.TEXT_NODE ? 'TEXT' : 'ELEMENT'}\n`;
+                output += `Content: "${range.startContainer.textContent?.substring(0, 30)}..."\n`;
+                
+                // Test link detection
+                const linkElement = findLinkFromSelection(selection);
+                output += `\n=== LINK DETECTION ===\n`;
+                output += `Link found: ${!!linkElement}\n`;
+                if (linkElement) {
+                    output += `Link URL: ${linkElement.href}\n`;
+                    output += `Link text: "${linkElement.textContent}"\n`;
+                }
+            }
+            
+            // Show all links in editor
+            const allLinks = editor.querySelectorAll('a[href]');
+            output += `\n=== ALL LINKS ===\n`;
+            output += `Total links: ${allLinks.length}\n`;
+            allLinks.forEach((link, i) => {
+                output += `${i + 1}. "${link.textContent}" → ${link.href}\n`;
+            });
+            
+            result.textContent = output;
+            result.className = 'result';
+        }
+        
+        function findLinkFromSelection(selection) {
+            if (!selection || !selection.rangeCount) return null;
+            
+            const range = selection.getRangeAt(0);
+            
+            // Helper function to find link element from a node
+            const findLinkFromNode = (node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    return node.parentElement?.closest('a') || null;
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.tagName === 'A') {
+                        return node;
+                    }
+                    return node.closest('a') || null;
+                }
+                return null;
+            };
+
+            // Check start container first
+            let linkElement = findLinkFromNode(range.startContainer);
+
+            // If not found and we have a selection, check end container too
+            if (!linkElement && !selection.isCollapsed) {
+                const endLink = findLinkFromNode(range.endContainer);
+                if (endLink) {
+                    linkElement = endLink;
+                }
+            }
+
+            // If still not found, check the common ancestor
+            if (!linkElement) {
+                linkElement = findLinkFromNode(range.commonAncestorContainer);
+            }
+
+            // Last resort: check if the range intersects with any links
+            if (!linkElement) {
+                const editor = document.getElementById('editor');
+                const allLinks = editor.querySelectorAll('a[href]');
+                for (const link of allLinks) {
+                    if (range.intersectsNode(link)) {
+                        linkElement = link;
+                        break;
+                    }
+                }
+            }
+            
+            return linkElement;
+        }
+        
+        function createLink() {
+            const selection = window.getSelection();
+            const result = document.getElementById('result');
+            
+            if (!selection || !selection.rangeCount || selection.isCollapsed) {
+                result.textContent = '❌ Please select some text first to create a link!';
+                result.className = 'result error';
+                return;
+            }
+            
+            const url = prompt('Enter the URL for the link:', 'https://');
+            if (!url || url.trim() === '' || url === 'https://') {
+                result.textContent = '❌ Link creation cancelled or no URL provided.';
+                result.className = 'result error';
+                return;
+            }
+            
+            // Normalize URL
+            let normalizedUrl = url.trim();
+            if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://') && !normalizedUrl.startsWith('/')) {
+                normalizedUrl = `https://${normalizedUrl}`;
+            }
+            
+            // Create the link
+            const success = document.execCommand('createLink', false, normalizedUrl);
+            
+            if (success) {
+                // Add target and rel attributes
+                setTimeout(() => {
+                    const editor = document.getElementById('editor');
+                    const links = editor.querySelectorAll(`a[href="${normalizedUrl}"]`);
+                    links.forEach(link => {
+                        link.setAttribute('target', '_blank');
+                        link.setAttribute('rel', 'noopener noreferrer');
+                    });
+                    
+                    result.textContent = `✅ Link created successfully!\nURL: ${normalizedUrl}\nNow try clicking on the link text and then click "Edit Link"`;
+                    result.className = 'result success';
+                }, 0);
+            } else {
+                result.textContent = '❌ Failed to create link. Please try again.';
+                result.className = 'result error';
+            }
+        }
+        
+        function editLink() {
+            const selection = window.getSelection();
+            const result = document.getElementById('result');
+            
+            // Find link using the same logic as the WYSIWYG editor
+            let linkElement = null;
+            
+            if (selection && selection.rangeCount > 0) {
+                linkElement = findLinkFromSelection(selection);
+            }
+            
+            // If still no link found, check if there's only one link in the editor
+            if (!linkElement) {
+                const editor = document.getElementById('editor');
+                const allLinks = editor.querySelectorAll('a[href]');
+                if (allLinks.length === 1) {
+                    linkElement = allLinks[0];
+                }
+            }
+            
+            if (linkElement && linkElement.href) {
+                const currentUrl = linkElement.href;
+                const newUrl = prompt('Edit the URL for this link:', currentUrl);
+                
+                if (newUrl === null) {
+                    result.textContent = '❌ Link editing cancelled.';
+                    result.className = 'result error';
+                    return;
+                }
+                
+                if (newUrl.trim() === '') {
+                    // Remove the link but keep the text
+                    const textContent = linkElement.textContent;
+                    const textNode = document.createTextNode(textContent);
+                    linkElement.parentNode.replaceChild(textNode, linkElement);
+                    
+                    result.textContent = '✅ Link removed, text preserved.';
+                    result.className = 'result success';
+                    return;
+                }
+                
+                // Normalize URL
+                let normalizedUrl = newUrl.trim();
+                if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://') && !normalizedUrl.startsWith('/')) {
+                    normalizedUrl = `https://${normalizedUrl}`;
+                }
+                
+                // Update the link
+                linkElement.href = normalizedUrl;
+                if (!linkElement.hasAttribute('target')) {
+                    linkElement.setAttribute('target', '_blank');
+                }
+                if (!linkElement.hasAttribute('rel')) {
+                    linkElement.setAttribute('rel', 'noopener noreferrer');
+                }
+                
+                result.textContent = `✅ Link updated successfully!\nOld URL: ${currentUrl}\nNew URL: ${normalizedUrl}`;
+                result.className = 'result success';
+            } else {
+                result.textContent = '❌ No link found!\n\nTo edit a link:\n1. Click on the link text to place your cursor inside it, OR\n2. Select the entire link text, OR\n3. If there\'s only one link, it will be auto-detected';
+                result.className = 'result error';
+            }
+        }
+        
+        function clearEditor() {
+            const editor = document.getElementById('editor');
+            const result = document.getElementById('result');
+            
+            editor.innerHTML = '<p>Editor cleared. Type some text, select it, and create a link to test the functionality.</p>';
+            result.textContent = 'Editor cleared. Ready for testing!';
+            result.className = 'result';
+        }
+        
+        // Prevent actual link navigation for testing
+        document.getElementById('editor').addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const result = document.getElementById('result');
+                result.textContent = `🔗 Link clicked: ${e.target.href}\n(Navigation prevented for testing)\n\nTo edit this link, click on it to place your cursor, then click "Edit Link"`;
+                result.className = 'result';
+            }
+        });
+        
+        // Auto-focus editor
+        document.getElementById('editor').focus();
+    </script>
+</body>
+</html>

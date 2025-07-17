@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Test</title>
+</head>
+<body>
+    <h1>WYSIWYG Editor Color Test</h1>
+    
+    <div style="margin: 20px;">
+        <h2>Test Instructions:</h2>
+        <ol>
+            <li>Type some text in the editor below</li>
+            <li>Select the text</li>
+            <li>Click on "Text Color" or "Background Color" buttons</li>
+            <li>Choose a color from the palette</li>
+            <li>Continue typing to see if the color persists</li>
+        </ol>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="module">
+        import { createRoot } from 'react-dom/client';
+        import { createElement } from 'react';
+        import { WYSIWYGEditor } from './src/components/WYSIWYGEditor.tsx';
+
+        const container = document.getElementById('root');
+        const root = createRoot(container);
+        
+        root.render(
+            createElement(WYSIWYGEditor, {
+                placeholder: "Type some text here, then select it and try the color buttons...",
+                onChange: (content) => {
+                    console.log('Content changed:', content);
+                }
+            })
+        );
+    </script>
+</body>
+</html>

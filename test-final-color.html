@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Color Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .editor { border: 2px solid #007cba; padding: 15px; min-height: 100px; margin: 10px 0; }
+        .editor:focus { outline: 3px solid #007cba; }
+        .color-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; margin: 10px 0; }
+        .color-btn { width: 30px; height: 30px; border: 1px solid #ccc; cursor: pointer; }
+        .color-btn:hover { border: 2px solid #333; }
+        .status { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Final Color Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>Instructions:</h2>
+        <ol>
+            <li><strong>Type text</strong> in the editor below</li>
+            <li><strong>Select the text</strong> you want to color</li>
+            <li><strong>Click a color</strong> from the palette</li>
+            <li><strong>Continue typing</strong> to see if color persists</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Color Palette Test:</h2>
+        <div class="color-grid" id="colorGrid"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Editor:</h2>
+        <div class="editor" contenteditable="true" id="testEditor">
+            Type your text here, select it, then click colors above...
+        </div>
+    </div>
+
+    <div class="status" id="status">Ready - Select text and click a color</div>
+
+    <script>
+        // Same comprehensive color palette as the WYSIWYG editor
+        const colors = [
+            // Grayscale
+            '#000000', '#1a1a1a', '#333333', '#4d4d4d', '#666666', '#808080', '#999999', '#b3b3b3', '#cccccc', '#e6e6e6', '#f5f5f5', '#ffffff',
+            // Reds
+            '#ffebee', '#ffcdd2', '#ef9a9a', '#e57373', '#ef5350', '#f44336', '#e53935', '#d32f2f', '#c62828', '#b71c1c', '#ff8a80', '#ff5252',
+            // Pinks  
+            '#fce4ec', '#f8bbd9', '#f48fb1', '#f06292', '#ec407a', '#e91e63', '#d81b60', '#c2185b', '#ad1457', '#880e4f', '#ff80ab', '#ff4081',
+            // Purples
+            '#f3e5f5', '#e1bee7', '#ce93d8', '#ba68c8', '#ab47bc', '#9c27b0', '#8e24aa', '#7b1fa2', '#6a1b9a', '#4a148c', '#ea80fc', '#e040fb',
+            // Blues
+            '#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#42a5f5', '#2196f3', '#1e88e5', '#1976d2', '#1565c0', '#0d47a1', '#82b1ff', '#448aff',
+            // Greens
+            '#e8f5e8', '#c8e6c9', '#a5d6a7', '#81c784', '#66bb6a', '#4caf50', '#43a047', '#388e3c', '#2e7d32', '#1b5e20', '#b9f6ca', '#69f0ae',
+            // Yellows
+            '#fffde7', '#fff9c4', '#fff59d', '#fff176', '#ffee58', '#ffeb3b', '#fdd835', '#f9a825', '#f57f17', '#ff6f00', '#ffff8d', '#ffff00',
+            // Oranges
+            '#fff3e0', '#ffe0b2', '#ffcc80', '#ffb74d', '#ffa726', '#ff9800', '#fb8c00', '#f57c00', '#ef6c00', '#e65100', '#ffd180', '#ffab40'
+        ];
+
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = message;
+        }
+
+        function applyColor(color, isBackground = false) {
+            const editor = document.getElementById('testEditor');
+            editor.focus();
+            
+            const selection = window.getSelection();
+            const selectedText = selection.toString();
+            
+            updateStatus(`Applying ${isBackground ? 'background' : 'text'} color ${color}. Selected: "${selectedText}"`);
+            
+            try {
+                const command = isBackground ? 'backColor' : 'foreColor';
+                const result = document.execCommand(command, false, color);
+                
+                if (result) {
+                    updateStatus(`✅ ${color} applied successfully! Continue typing to see if it persists.`);
+                } else {
+                    updateStatus(`❌ Failed to apply ${color}. Try selecting text first.`);
+                }
+            } catch (error) {
+                updateStatus(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function createColorGrid() {
+            const grid = document.getElementById('colorGrid');
+            
+            colors.forEach((color, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'color-btn';
+                btn.style.backgroundColor = color;
+                btn.title = `${color.toUpperCase()} - Left click for text, Right click for background`;
+                
+                // Left click for text color
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    applyColor(color, false);
+                };
+                
+                // Right click for background color
+                btn.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    applyColor(color, true);
+                };
+                
+                grid.appendChild(btn);
+            });
+        }
+
+        // Initialize
+        createColorGrid();
+        document.getElementById('testEditor').focus();
+        updateStatus('✨ Color palette loaded! Left-click for text color, right-click for background color.');
+    </script>
+</body>
+</html>
