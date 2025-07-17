@@ -1,6 +1,6 @@
 {
   "name": "wysiwyg-editor-demo",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "Demo application for WYSIWYG Editor library",
   "type": "module",
   "scripts": {
