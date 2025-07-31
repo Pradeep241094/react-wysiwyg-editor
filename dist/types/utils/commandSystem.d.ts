@@ -29,6 +29,10 @@ export declare class CommandExecutor {
      */
     private isSelectionEmpty;
     /**
+     * Check if the current selection contains mixed formatting
+     */
+    private hasMixedFormatting;
+    /**
      * Get the current active formatting states
      */
     getActiveFormats(): Set<string>;

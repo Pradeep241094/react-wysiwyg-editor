@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbar Configuration Examples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .example {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .example h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .code-block {
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .result {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛠️ Toolbar Configuration Guide</h1>
+    <p>This guide shows you exactly how to hide/show specific toolbar elements and make the toolbar configurable.</p>
+
+    <div class="example">
+        <h3>1. 📝 Minimal Toolbar (Only Basic Formatting)</h3>
+        <p>Show only Bold, Italic, and Underline buttons:</p>
+        <div class="code-block">
+const toolbarConfig = {
+  preset: 'minimal'
+};
+
+// Or be more specific:
+const toolbarConfig = {
+  include: {
+    buttons: ['bold', 'italic', 'underline']
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={toolbarConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Only Bold (B), Italic (I), and Underline (U) buttons will appear in the toolbar.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>2. 📚 Hide Specific Buttons</h3>
+        <p>Start with full toolbar but hide image and file upload buttons:</p>
+        <div class="code-block">
+const toolbarConfig = {
+  preset: 'full',
+  exclude: {
+    buttons: ['image', 'file', 'table']
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={toolbarConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> All buttons except image, file upload, and table insertion will be shown.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>3. 🎯 Category-Based Configuration</h3>
+        <p>Show only formatting and structure categories:</p>
+        <div class="code-block">
+const toolbarConfig = {
+  include: {
+    categories: ['formatting', 'structure']
+  }
+};
+
+// Categories available:
+// - 'formatting': bold, italic, underline, strikethrough, subscript, superscript
+// - 'structure': h1, h2, h3, h4, h5, h6
+// - 'lists': bulletList, numberedList, indent, outdent
+// - 'alignment': alignLeft, alignCenter, alignRight, alignJustify
+// - 'media': image, file, table
+// - 'links': link, unlink
+// - 'advanced': fontColor, backgroundColor, fontSize, etc.
+
+&lt;WYSIWYGEditor toolbarConfig={toolbarConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Only formatting buttons (Bold, Italic, etc.) and heading buttons (H1, H2, etc.) will be shown.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>4. 🚫 Hide Entire Categories</h3>
+        <p>Start with full toolbar but hide media and advanced categories:</p>
+        <div class="code-block">
+const toolbarConfig = {
+  preset: 'full',
+  exclude: {
+    categories: ['media', 'advanced']
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={toolbarConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> All buttons except media (image, file, table) and advanced (colors, fonts, etc.) will be shown.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>5. 📋 Custom Button Selection</h3>
+        <p>Pick exactly which buttons you want:</p>
+        <div class="code-block">
+const toolbarConfig = {
+  include: {
+    buttons: [
+      'bold', 'italic', 'underline',    // Basic formatting
+      'h1', 'h2', 'h3',                // Headings
+      'bulletList', 'numberedList',    // Lists
+      'link', 'unlink',                // Links
+      'undo', 'redo'                   // History
+    ]
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={toolbarConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Only the specified buttons will appear in the toolbar.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>6. 🎨 Custom Groups with Ordering</h3>
+        <p>Organize buttons into custom groups:</p>
+        <div class="code-block">
+const toolbarConfig = {
+  include: {
+    groups: [
+      {
+        name: 'text-formatting',
+        buttons: ['bold', 'italic', 'underline']
+      },
+      {
+        name: 'headings',
+        buttons: ['h1', 'h2', 'h3']
+      },
+      {
+        name: 'actions',
+        buttons: ['undo', 'redo', 'removeFormat']
+      }
+    ]
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={toolbarConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Buttons will be organized into the specified groups in the given order.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>7. 🔧 Real-World Example: Blog Editor</h3>
+        <p>Configuration for a blog post editor:</p>
+        <div class="code-block">
+const blogEditorConfig = {
+  include: {
+    categories: ['formatting', 'structure', 'lists', 'links'],
+    buttons: ['image', 'undo', 'redo']  // Add specific buttons
+  },
+  exclude: {
+    buttons: ['subscript', 'superscript']  // Remove these from formatting
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={blogEditorConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Perfect for blog writing with formatting, headings, lists, links, and images, but without advanced features.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>8. 📝 Real-World Example: Comment Editor</h3>
+        <p>Minimal configuration for user comments:</p>
+        <div class="code-block">
+const commentEditorConfig = {
+  include: {
+    buttons: ['bold', 'italic', 'link']
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={commentEditorConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Very simple toolbar with just bold, italic, and link buttons - perfect for comments.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>9. 📧 Real-World Example: Newsletter Editor</h3>
+        <p>Configuration optimized for email newsletters:</p>
+        <div class="code-block">
+const newsletterConfig = {
+  include: {
+    categories: ['formatting', 'structure', 'alignment'],
+    buttons: ['link', 'image', 'undo', 'redo']
+  },
+  exclude: {
+    buttons: ['subscript', 'superscript', 'h4', 'h5', 'h6']
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={newsletterConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Perfect for email newsletters with formatting, headings (H1-H3), alignment, links, and images.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>10. 🎨 Custom Button Groups with Ordering</h3>
+        <p>Organize buttons into custom groups with visual separators:</p>
+        <div class="code-block">
+const customGroupsConfig = {
+  include: {
+    groups: [
+      {
+        name: 'text-formatting',
+        buttons: ['bold', 'italic', 'underline']
+      },
+      {
+        name: 'headings',
+        buttons: ['h1', 'h2', 'h3']
+      },
+      {
+        name: 'lists',
+        buttons: ['bulletList', 'numberedList']
+      },
+      {
+        name: 'actions',
+        buttons: ['undo', 'redo', 'removeFormat']
+      }
+    ]
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={customGroupsConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Buttons organized into logical groups with visual separators between each group.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>11. 📚 Documentation Editor</h3>
+        <p>Perfect for technical documentation:</p>
+        <div class="code-block">
+const documentationConfig = {
+  include: {
+    categories: ['formatting', 'structure', 'lists', 'links'],
+    buttons: ['sourceCode', 'undo', 'redo']
+  },
+  exclude: {
+    categories: ['media', 'advanced']
+  }
+};
+
+&lt;WYSIWYGEditor toolbarConfig={documentationConfig} /&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> All formatting and structure tools, lists, links, and source code view - no media or advanced styling.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>12. 🎯 Using with Basic Toolbar Component</h3>
+        <p>The basic Toolbar component also supports configuration:</p>
+        <div class="code-block">
+import { Toolbar } from './components/Toolbar';
+import { ToolbarConfigResolver } from './utils/toolbarConfigResolver';
+
+const config = {
+  include: {
+    buttons: ['bold', 'italic', 'h1', 'h2']
+  }
+};
+
+const resolvedConfig = ToolbarConfigResolver.resolve(config);
+
+&lt;Toolbar
+  onCommand={handleCommand}
+  activeFormats={activeFormats}
+  canUndo={canUndo}
+  canRedo={canRedo}
+  toolbarConfig={resolvedConfig}
+/&gt;
+        </div>
+        <div class="result">
+            <strong>Result:</strong> Basic toolbar with only the specified buttons, maintaining backward compatibility.
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>🎯 Available Button Types</h3>
+        <p>Here are all the button types you can include/exclude:</p>
+        <div class="code-block">
+// Basic formatting
+'bold', 'italic', 'underline', 'strikethrough'
+
+// Text styling
+'subscript', 'superscript', 'removeFormat'
+
+// Headings
+'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+
+// Lists and indentation
+'bulletList', 'numberedList', 'indent', 'outdent'
+
+// Text alignment
+'alignLeft', 'alignCenter', 'alignRight', 'alignJustify'
+
+// Media insertion
+'image', 'file', 'table'
+
+// Links
+'link', 'unlink'
+
+// Advanced formatting
+'fontColor', 'backgroundColor', 'fontSize', 'fontFamily'
+
+// Special content
+'specialChar', 'horizontalRule'
+
+// Tools
+'findReplace', 'sourceCode', 'fullscreen', 'print'
+
+// History
+'undo', 'redo'
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>🎛️ Interactive Configuration Builder</h3>
+        <p>Want to experiment with different configurations? Try our interactive builder!</p>
+        <div style="text-align: center; padding: 20px; background: #e8f5e9; border-radius: 8px; margin: 15px 0;">
+            <h4 style="margin-top: 0; color: #333;">🚀 Build Your Own Configuration</h4>
+            <p style="color: #666; margin-bottom: 15px;">
+                Use our visual interface to create custom toolbar configurations and see the results in real-time.
+            </p>
+            <a href="config-builder.html" target="_blank" style="
+                display: inline-block;
+                padding: 12px 24px;
+                background: #4caf50;
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: bold;
+                box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+            ">
+                🎛️ Open Configuration Builder
+            </a>
+            <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                Opens in a new tab with the interactive builder
+            </div>
+        </div>
+    </div>
+
+    <div class="example">
+        <h3>✨ Key Benefits</h3>
+        <ul>
+            <li><span class="highlight">Flexible Configuration</span>: Use presets, categories, or individual buttons</li>
+            <li><span class="highlight">Backward Compatible</span>: No configuration = full toolbar (existing behavior)</li>
+            <li><span class="highlight">Easy to Use</span>: Simple include/exclude patterns</li>
+            <li><span class="highlight">Customizable</span>: Create your own button groups and ordering</li>
+            <li><span class="highlight">Works with Both</span>: Basic Toolbar and Advanced Toolbar components</li>
+        </ul>
+    </div>
+
+    <script>
+        console.log('🛠️ Toolbar Configuration System');
+        console.log('✅ Hide/show specific buttons: Use include/exclude with button names');
+        console.log('✅ Hide/show categories: Use include/exclude with category names');
+        console.log('✅ Use presets: minimal, standard, or full');
+        console.log('✅ Custom groups: Define your own button organization');
+        console.log('✅ Backward compatible: No config = full toolbar');
+    </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { AdvancedToolbar } from './AdvancedToolbar';
 import { EditableArea } from './EditableArea';
-import { ImageCropModal } from './ImageCropModal';
+import { ImageUploadCropModal } from './ImageUploadCropModal';
 import { FileUploadModal } from './FileUploadModal';
 import { ImageManager } from './ImageManager';
 import { TableInsertModal } from './TableInsertModal';
@@ -12,25 +12,29 @@ import { NotificationModal } from './NotificationModal';
 import { LinkPreviewPopup } from './LinkPreviewPopup';
 import { WYSIWYGEditorProps, SelectionState } from '../types';
 import { commandExecutor } from '../utils/commandSystem';
+import { ToolbarConfigResolver } from '../utils/toolbarConfigResolver';
 
 export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   initialContent = '',
   placeholder = 'Start typing...',
   onChange,
   onFocus,
-  onBlur
+  onBlur,
+  toolbarConfig,
+  showConfigDropdown = false,
+  configOptions,
+  selectedConfigKey,
+  onConfigChange,
+  height = '300px' // Default height
 }) => {
   const [content, setContent] = useState(initialContent);
   const [isEditorFocused, setIsEditorFocused] = useState(false);
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  const [isImageCropModalOpen, setIsImageCropModalOpen] = useState(false);
+  const [isImageUploadCropModalOpen, setIsImageUploadCropModalOpen] = useState(false);
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
-  const [selectedImageUrl, setSelectedImageUrl] = useState<string>('');
-  const [uploadType, setUploadType] = useState<'image' | 'file'>('image');
   const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null);
-  const [_imageManagers, _setImageManagers] = useState<HTMLImageElement[]>([]);
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [isSpecialCharModalOpen, setIsSpecialCharModalOpen] = useState(false);
   const [isUrlInputModalOpen, setIsUrlInputModalOpen] = useState(false);
@@ -53,6 +57,14 @@ export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
   });
   const editorRef = useRef<HTMLDivElement>(null);
   const announcementRef = useRef<HTMLDivElement>(null);
+
+  // Process toolbar configuration with enhanced memoization
+  const resolvedToolbarConfig = useMemo(() => {
+    return ToolbarConfigResolver.resolve(toolbarConfig);
+  }, [toolbarConfig]);
+
+  // Memoize the toolbar config to prevent unnecessary re-renders
+  const memoizedToolbarConfig = useMemo(() => resolvedToolbarConfig, [resolvedToolbarConfig]);
 
   // Update format states based on current selection
   const updateFormatStates = useCallback(() => {
@@ -104,65 +116,6 @@ export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
     return formatNames[command] || command;
   }, []);
 
-  // Handle image upload and cropping
-  const handleImageUpload = useCallback((file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageUrl = e.target?.result as string;
-      setSelectedImageUrl(imageUrl);
-      setIsFileUploadModalOpen(false);
-      setIsImageCropModalOpen(true);
-    };
-    reader.readAsDataURL(file);
-  }, []);
-
-  // Handle cropped image insertion
-  const handleCroppedImage = useCallback((croppedImageUrl: string) => {
-    const result = commandExecutor.insertImage(croppedImageUrl);
-
-    if (result.success) {
-      announceToScreenReader('Image inserted');
-      // Update content after successful image insertion
-      setTimeout(() => {
-        if (editorRef.current) {
-          const newContent = editorRef.current.innerHTML;
-          setContent(newContent);
-          onChange?.(newContent);
-          updateFormatStates();
-          // Set up image management for the newly inserted image
-          setupImageManagement();
-        }
-      }, 0);
-    } else {
-      console.warn('Image insertion failed:', result.error);
-      announceToScreenReader('Image insertion failed');
-    }
-
-    setIsImageCropModalOpen(false);
-    setSelectedImageUrl('');
-  }, [onChange, updateFormatStates, announceToScreenReader]);
-
-  // Set up image management for all images in the editor
-  const setupImageManagement = useCallback(() => {
-    if (!editorRef.current) return;
-
-    const images = editorRef.current.querySelectorAll('img.editor-image');
-    const imageElements = Array.from(images) as HTMLImageElement[];
-
-    // Add click handlers to images for management
-    imageElements.forEach((img) => {
-      // Remove existing listeners to avoid duplicates
-      img.removeEventListener('click', handleImageClick);
-      img.addEventListener('click', handleImageClick);
-
-      // Add drag and drop functionality
-      img.addEventListener('dragstart', handleImageDragStart);
-      img.addEventListener('dragend', handleImageDragEnd);
-    });
-
-    _setImageManagers(imageElements);
-  }, []);
-
   // Handle image click for management
   const handleImageClick = useCallback((event: Event) => {
     event.stopPropagation();
@@ -185,6 +138,48 @@ export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
     const img = event.target as HTMLImageElement;
     img.style.opacity = '1';
   }, []);
+
+  // Set up image management for all images in the editor
+  const setupImageManagement = useCallback(() => {
+    if (!editorRef.current) return;
+
+    const images = editorRef.current.querySelectorAll('img.editor-image');
+    const imageElements = Array.from(images) as HTMLImageElement[];
+
+    // Add click handlers to images for management
+    imageElements.forEach((img) => {
+      // Remove existing listeners to avoid duplicates
+      img.removeEventListener('click', handleImageClick);
+      img.addEventListener('click', handleImageClick);
+
+      // Add drag and drop functionality
+      img.addEventListener('dragstart', handleImageDragStart);
+      img.addEventListener('dragend', handleImageDragEnd);
+    });
+  }, [handleImageClick, handleImageDragStart, handleImageDragEnd]);
+
+  // Handle image insertion from the comprehensive modal
+  const handleImageInsert = useCallback((croppedImageUrl: string) => {
+    const result = commandExecutor.insertImage(croppedImageUrl);
+
+    if (result.success) {
+      announceToScreenReader('Image inserted');
+      // Update content after successful image insertion
+      setTimeout(() => {
+        if (editorRef.current) {
+          const newContent = editorRef.current.innerHTML;
+          setContent(newContent);
+          onChange?.(newContent);
+          updateFormatStates();
+          // Set up image management for the newly inserted image
+          setupImageManagement();
+        }
+      }, 0);
+    } else {
+      console.warn('Image insertion failed:', result.error);
+      announceToScreenReader('Image insertion failed');
+    }
+  }, [onChange, updateFormatStates, announceToScreenReader, setupImageManagement]);
 
   // Handle image update from ImageManager
   const handleImageUpdate = useCallback(() => {
@@ -479,13 +474,11 @@ export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
 
     // Handle special commands that open modals
     if (command === 'insertImage') {
-      setUploadType('image');
-      setIsFileUploadModalOpen(true);
+      setIsImageUploadCropModalOpen(true);
       return;
     }
 
     if (command === 'uploadFile') {
-      setUploadType('file');
       setIsFileUploadModalOpen(true);
       return;
     }
@@ -823,6 +816,11 @@ export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
         activeFormats={activeFormats}
         canUndo={canUndo}
         canRedo={canRedo}
+        toolbarConfig={memoizedToolbarConfig}
+        showConfigDropdown={showConfigDropdown}
+        configOptions={configOptions}
+        selectedConfigKey={selectedConfigKey}
+        onConfigChange={onConfigChange}
       />
       <EditableArea
         content={content}
@@ -833,6 +831,7 @@ export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
         editorRef={editorRef}
         onSelectionChange={handleSelectionChange}
         onLinkClick={handleLinkClick}
+        height={height}
       />
       {/* Screen reader announcements */}
       <div
@@ -850,26 +849,22 @@ export const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({
         Ctrl+Shift+L for numbered list, Ctrl+\ for clear formatting
       </div>
 
-      {/* File Upload Modal */}
+      {/* Image Upload and Crop Modal */}
+      <ImageUploadCropModal
+        isOpen={isImageUploadCropModalOpen}
+        onClose={() => setIsImageUploadCropModalOpen(false)}
+        onImageInsert={handleImageInsert}
+      />
+
+      {/* File Upload Modal (for non-image files) */}
       <FileUploadModal
         isOpen={isFileUploadModalOpen}
         onClose={() => setIsFileUploadModalOpen(false)}
-        onFileSelect={uploadType === 'image' ? handleImageUpload : handleFileUpload}
-        accept={uploadType === 'image' ? 'image/*' : '*/*'}
-        maxSize={uploadType === 'image' ? 5 * 1024 * 1024 : 10 * 1024 * 1024} // 5MB for images, 10MB for files
-        title={uploadType === 'image' ? 'Upload Image' : 'Upload File'}
-        description={uploadType === 'image' ? 'Select an image to upload and crop' : 'Select a file to upload'}
-      />
-
-      {/* Image Crop Modal */}
-      <ImageCropModal
-        isOpen={isImageCropModalOpen}
-        imageUrl={selectedImageUrl}
-        onClose={() => {
-          setIsImageCropModalOpen(false);
-          setSelectedImageUrl('');
-        }}
-        onCropComplete={handleCroppedImage}
+        onFileSelect={handleFileUpload}
+        accept="*/*"
+        maxSize={10 * 1024 * 1024} // 10MB for files
+        title="Upload File"
+        description="Select a file to upload"
       />
 
       {/* Table Insert Modal */}
