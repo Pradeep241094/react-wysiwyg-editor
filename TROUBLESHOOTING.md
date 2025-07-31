@@ -1,288 +1,420 @@
-# WYSIWYG Editor Troubleshooting Guide
+# Troubleshooting Guide
 
-This guide helps you diagnose and fix common issues with the WYSIWYG editor.
+This guide helps you resolve common issues with the WYSIWYG Editor, including the new toolbar configuration system.
 
 ## Table of Contents
 
-1. [Common Issues](#common-issues)
-2. [Browser Compatibility](#browser-compatibility)
-3. [Performance Issues](#performance-issues)
-4. [Content Issues](#content-issues)
-5. [Styling Problems](#styling-problems)
-6. [Integration Issues](#integration-issues)
-7. [Accessibility Issues](#accessibility-issues)
-8. [Development Issues](#development-issues)
-9. [Debugging Tips](#debugging-tips)
-10. [Getting Help](#getting-help)
+- [Toolbar Configuration Issues](#toolbar-configuration-issues)
+- [General Editor Issues](#general-editor-issues)
+- [Performance Issues](#performance-issues)
+- [Integration Issues](#integration-issues)
+- [Browser Compatibility](#browser-compatibility)
+- [Development Issues](#development-issues)
 
-## Common Issues
+## Toolbar Configuration Issues
 
-### Editor Not Rendering
+### Empty Toolbar
 
-**Problem**: The editor component doesn't appear on the page.
+**Problem**: Toolbar appears with no buttons after adding `toolbarConfig`.
 
-**Possible Causes & Solutions**:
+**Symptoms**:
+- Toolbar container is visible but empty
+- No buttons render in the toolbar area
 
-1. **Missing CSS imports**
+**Causes & Solutions**:
+
+1. **Empty Configuration Object**
    ```tsx
-   // Make sure you import the CSS file
-   import './styles/editor.css';
-   ```
-
-2. **Component not properly imported**
-   ```tsx
-   // Correct import
-   import { WYSIWYGEditor } from './components/WYSIWYGEditor';
+   // ❌ Problem: Empty config results in no buttons
+   <WYSIWYGEditor toolbarConfig={{}} />
    
-   // Not this
-   import WYSIWYGEditor from './components/WYSIWYGEditor';
+   // ✅ Solution: Use a preset or include buttons
+   <WYSIWYGEditor toolbarConfig={{ preset: 'minimal' }} />
    ```
 
-3. **Missing React dependencies**
-   ```bash
-   npm install react react-dom
+2. **Excluding Everything**
+   ```tsx
+   // ❌ Problem: Excluding all categories
+   <WYSIWYGEditor 
+     toolbarConfig={{
+       preset: 'full',
+       exclude: { 
+         categories: ['formatting', 'structure', 'lists', 'alignment', 'media', 'links', 'advanced'] 
+       }
+     }} 
+   />
+   
+   // ✅ Solution: Don't exclude everything
+   <WYSIWYGEditor 
+     toolbarConfig={{
+       preset: 'full',
+       exclude: { categories: ['media'] }
+     }} 
+   />
    ```
 
-4. **TypeScript errors preventing compilation**
-   - Check the browser console for compilation errors
-   - Ensure all TypeScript types are properly imported
+3. **Invalid Button Names**
+   ```tsx
+   // ❌ Problem: All button names are invalid
+   <WYSIWYGEditor 
+     toolbarConfig={{
+       include: { buttons: ['invalid1', 'invalid2'] }
+     }} 
+   />
+   
+   // ✅ Solution: Use valid button names
+   <WYSIWYGEditor 
+     toolbarConfig={{
+       include: { buttons: ['bold', 'italic', 'underline'] }
+     }} 
+   />
+   ```
 
-### Toolbar Buttons Not Working
+**Debugging Steps**:
+1. Check browser console for warnings
+2. Verify button names against documentation
+3. Test with a simple preset first
+4. Use the resolver to inspect configuration:
 
-**Problem**: Clicking toolbar buttons doesn't apply formatting.
+```tsx
+import { ToolbarConfigResolver } from "@prmargas/react-wysiwyg-editor";
 
-**Possible Causes & Solutions**:
+const config = { /* your config */ };
+const resolved = ToolbarConfigResolver.resolve(config);
+console.log('Enabled buttons:', Array.from(resolved.enabledButtons));
+console.log('Groups:', resolved.groups);
+```
 
-1. **Focus issues**
-   - The editor must be focused for commands to work
-   - Check if `editorRef.current` is properly set
-   - Ensure focus is restored after toolbar clicks
+### Invalid Button/Category Warnings
 
-2. **Browser compatibility**
-   ```javascript
-   // Check if execCommand is supported
-   if (!document.execCommand) {
-     console.warn('execCommand not supported in this browser');
+**Problem**: Console shows warnings about invalid buttons or categories.
+
+**Symptoms**:
+- Console warnings: `Invalid button "xyz" ignored`
+- Console warnings: `Invalid category "xyz" ignored`
+- Some expected buttons don't appear
+
+**Solution**: Check names against the valid lists:
+
+**Valid Categories**:
+- `formatting`, `structure`, `lists`, `alignment`, `media`, `links`, `advanced`
+
+**Valid Buttons**:
+- **Formatting**: `bold`, `italic`, `underline`, `strikethrough`, `subscript`, `superscript`
+- **Structure**: `h1`, `h2`, `h3`, `h4`, `h5`, `h6`
+- **Lists**: `bulletList`, `numberedList`, `indent`, `outdent`
+- **Alignment**: `alignLeft`, `alignCenter`, `alignRight`, `alignJustify`
+- **Media**: `image`, `file`, `table`
+- **Links**: `link`, `unlink`
+- **Advanced**: `fontColor`, `backgroundColor`, `fontSize`, `fontFamily`, `specialChar`, `horizontalRule`, `findReplace`, `sourceCode`, `fullscreen`, `print`, `undo`, `redo`, `removeFormat`
+
+```tsx
+// ❌ Invalid names
+<WYSIWYGEditor 
+  toolbarConfig={{
+    include: { 
+      categories: ['text-formatting'], // Invalid
+      buttons: ['make-bold', 'make-italic'] // Invalid
+    }
+  }} 
+/>
+
+// ✅ Valid names
+<WYSIWYGEditor 
+  toolbarConfig={{
+    include: { 
+      categories: ['formatting'], // Valid
+      buttons: ['bold', 'italic'] // Valid
+    }
+  }} 
+/>
+```
+
+### Configuration Not Taking Effect
+
+**Problem**: Changes to `toolbarConfig` don't appear in the UI.
+
+**Symptoms**:
+- Toolbar doesn't update when configuration changes
+- Same buttons appear regardless of configuration
+
+**Causes & Solutions**:
+
+1. **Object Reference Not Changing**
+   ```tsx
+   // ❌ Problem: Mutating existing object
+   const [config, setConfig] = useState({ preset: 'minimal' });
+   
+   // This won't trigger re-render:
+   const changeConfig = () => {
+     config.preset = 'full';
+   };
+   
+   // ✅ Solution: Create new object reference
+   const changeConfig = () => {
+     setConfig({ preset: 'full' });
+   };
+   ```
+
+2. **Nested Object Mutation**
+   ```tsx
+   // ❌ Problem: Mutating nested objects
+   const [config, setConfig] = useState({
+     include: { buttons: ['bold', 'italic'] }
+   });
+   
+   // This won't trigger re-render:
+   const addButton = () => {
+     config.include.buttons.push('underline');
+   };
+   
+   // ✅ Solution: Create new nested objects
+   const addButton = () => {
+     setConfig({
+       include: { 
+         buttons: [...config.include.buttons, 'underline'] 
+       }
+     });
+   };
+   ```
+
+3. **Memoization Issues**
+   ```tsx
+   // ❌ Problem: Over-memoization
+   const config = useMemo(() => ({ preset: 'minimal' }), []); // Never updates
+   
+   // ✅ Solution: Proper dependencies
+   const config = useMemo(() => ({ 
+     preset: userLevel === 'beginner' ? 'minimal' : 'full' 
+   }), [userLevel]);
+   ```
+
+### Unexpected Button Order
+
+**Problem**: Buttons don't appear in the expected order.
+
+**Symptoms**:
+- Buttons appear in different order than specified
+- Related buttons are separated
+
+**Causes & Solutions**:
+
+1. **Default Category-Based Ordering**
+   ```tsx
+   // ❌ Problem: Buttons grouped by category, not input order
+   <WYSIWYGEditor 
+     toolbarConfig={{
+       include: { buttons: ['bulletList', 'bold', 'h1', 'italic'] }
+     }} 
+   />
+   // Results in: [bold, italic] [h1] [bulletList] (grouped by category)
+   
+   // ✅ Solution: Use explicit ordering
+   <WYSIWYGEditor 
+     toolbarConfig={{
+       include: { buttons: ['bulletList', 'bold', 'h1', 'italic'] },
+       order: ['bulletList', 'bold', 'h1', 'italic']
+     }} 
+   />
+   ```
+
+2. **Custom Groups for Better Control**
+   ```tsx
+   // ✅ Solution: Use custom groups
+   <WYSIWYGEditor 
+     toolbarConfig={{
+       include: {
+         groups: [
+           { name: 'primary', buttons: ['bold', 'italic'] },
+           { name: 'structure', buttons: ['h1', 'bulletList'] }
+         ]
+       }
+     }} 
+   />
+   ```
+
+### Performance Issues with Configuration
+
+**Problem**: Slow rendering or frequent re-processing of toolbar configuration.
+
+**Symptoms**:
+- Slow editor initialization
+- Laggy toolbar updates
+- High CPU usage during configuration changes
+
+**Solutions**:
+
+1. **Memoize Configuration Objects**
+   ```tsx
+   // ❌ Problem: New object every render
+   function Editor({ userLevel }) {
+     const config = { preset: userLevel === 'beginner' ? 'minimal' : 'full' };
+     return <WYSIWYGEditor toolbarConfig={config} />;
+   }
+   
+   // ✅ Solution: Memoize configuration
+   function Editor({ userLevel }) {
+     const config = useMemo(() => ({
+       preset: userLevel === 'beginner' ? 'minimal' : 'full'
+     }), [userLevel]);
+     
+     return <WYSIWYGEditor toolbarConfig={config} />;
    }
    ```
 
-3. **Selection issues**
-   ```javascript
-   // Debug selection state
-   const selection = window.getSelection();
-   console.log('Selection:', selection?.toString());
-   console.log('Range count:', selection?.rangeCount);
+2. **Use Stable References**
+   ```tsx
+   // ❌ Problem: New object every render
+   function Editor() {
+     return <WYSIWYGEditor toolbarConfig={{ preset: 'minimal' }} />;
+   }
+   
+   // ✅ Solution: Stable reference
+   const MINIMAL_CONFIG = { preset: 'minimal' };
+   
+   function Editor() {
+     return <WYSIWYGEditor toolbarConfig={MINIMAL_CONFIG} />;
+   }
    ```
 
-4. **Command execution errors**
-   ```javascript
-   // Add error handling to command execution
-   try {
-     const success = document.execCommand(command, false, value);
-     if (!success) {
-       console.warn(`Command ${command} failed`);
+3. **Simplify Complex Configurations**
+   ```tsx
+   // ❌ Problem: Overly complex configuration
+   const complexConfig = {
+     include: {
+       groups: [
+         { name: 'group1', buttons: ['bold'] },
+         { name: 'group2', buttons: ['italic'] },
+         // ... many small groups
+       ]
+     },
+     order: [/* complex ordering */]
+   };
+   
+   // ✅ Solution: Simplified configuration
+   const simpleConfig = {
+     include: {
+       categories: ['formatting', 'structure']
      }
-   } catch (error) {
-     console.error('Command execution error:', error);
-   }
+   };
    ```
+
+## General Editor Issues
 
 ### Content Not Updating
 
-**Problem**: Changes in the editor don't trigger the `onChange` callback.
+**Problem**: Editor content doesn't update when `initialContent` changes.
 
-**Possible Causes & Solutions**:
+**Solution**: The `initialContent` prop only sets the initial value. Use a key to force re-initialization:
 
-1. **Event listener issues**
-   ```tsx
-   // Ensure proper event listeners are attached
-   useEffect(() => {
-     const editor = editorRef.current;
-     if (!editor) return;
+```tsx
+// ❌ Problem: initialContent doesn't update
+<WYSIWYGEditor initialContent={content} />
 
-     const handleInput = () => {
-       onChange(editor.innerHTML);
-     };
+// ✅ Solution: Use key to force re-initialization
+<WYSIWYGEditor 
+  key={contentId} 
+  initialContent={content} 
+/>
 
-     editor.addEventListener('input', handleInput);
-     return () => editor.removeEventListener('input', handleInput);
-   }, [onChange]);
-   ```
+// ✅ Better: Control content externally
+const [editorContent, setEditorContent] = useState(content);
 
-2. **React state updates**
-   ```tsx
-   // Use functional updates for state
-   const [content, setContent] = useState('');
-   
-   const handleChange = useCallback((newContent: string) => {
-     setContent(prevContent => {
-       if (prevContent !== newContent) {
-         return newContent;
-       }
-       return prevContent;
-     });
-   }, []);
-   ```
+useEffect(() => {
+  setEditorContent(content);
+}, [content]);
 
-3. **Controlled vs uncontrolled components**
-   ```tsx
-   // Make sure you're handling controlled updates properly
-   useEffect(() => {
-     if (editorRef.current && editorRef.current.innerHTML !== content) {
-       editorRef.current.innerHTML = content;
-     }
-   }, [content]);
-   ```
+<WYSIWYGEditor 
+  initialContent={editorContent}
+  onChange={setEditorContent}
+/>
+```
 
-### Paste Functionality Issues
+### Styling Issues
 
-**Problem**: Pasted content doesn't appear or appears with unwanted formatting.
-
-**Possible Causes & Solutions**:
-
-1. **Content sanitization too strict**
-   ```javascript
-   // Check sanitization rules
-   const ALLOWED_TAGS = ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a'];
-   
-   // Add more tags if needed
-   const EXTENDED_TAGS = [...ALLOWED_TAGS, 'span', 'div'];
-   ```
-
-2. **Paste event not handled**
-   ```tsx
-   const handlePaste = (e: ClipboardEvent) => {
-     e.preventDefault();
-     const text = e.clipboardData?.getData('text/plain');
-     const html = e.clipboardData?.getData('text/html');
-     
-     // Process and insert content
-     const sanitized = sanitizeContent(html || text);
-     document.execCommand('insertHTML', false, sanitized);
-   };
-   ```
-
-3. **Browser security restrictions**
-   - Some browsers restrict clipboard access
-   - Test in different browsers
-   - Provide fallback for manual paste
-
-## Browser Compatibility
-
-### Internet Explorer Issues
-
-**Problem**: Editor doesn't work in older browsers.
+**Problem**: Editor doesn't look right or styles are missing.
 
 **Solutions**:
-1. **Check browser support**
-   ```javascript
-   const isSupported = () => {
-     return (
-       'contentEditable' in document.createElement('div') &&
-       typeof document.execCommand === 'function'
-     );
-   };
-   
-   if (!isSupported()) {
-     // Show fallback textarea
-     return <textarea />;
-   }
+
+1. **Import Styles**
+   ```tsx
+   // Make sure to import styles
+   import "@prmargas/react-wysiwyg-editor/styles";
    ```
 
-2. **Polyfills for older browsers**
-   ```javascript
-   // Add polyfills for missing features
-   if (!window.getSelection) {
-     // Add selection polyfill
-   }
-   ```
-
-### Safari-Specific Issues
-
-**Problem**: Different behavior in Safari browser.
-
-**Solutions**:
-1. **WebKit-specific CSS**
+2. **CSS Conflicts**
    ```css
-   .wysiwyg-editable {
-     -webkit-user-select: text;
-     -webkit-user-modify: read-write-plaintext-only;
+   /* Check for conflicting CSS */
+   .wysiwyg-editor {
+     /* Your custom styles */
    }
-   ```
-
-2. **Safari execCommand quirks**
-   ```javascript
-   // Safari sometimes needs different approaches
-   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
    
-   if (isSafari && command === 'insertHTML') {
-     // Use alternative method for Safari
+   /* Ensure specificity */
+   .my-app .wysiwyg-editor {
+     /* More specific styles */
    }
    ```
 
-### Mobile Browser Issues
+3. **Height Issues**
+   ```tsx
+   // Set explicit height if needed
+   <WYSIWYGEditor 
+     height="300px"
+     // or
+     height={300}
+   />
+   ```
 
-**Problem**: Editor doesn't work well on mobile devices.
+### Focus/Blur Issues
+
+**Problem**: Focus and blur events not working correctly.
 
 **Solutions**:
-1. **Touch event handling**
-   ```css
-   .wysiwyg-editable {
-     touch-action: manipulation;
-   }
+
+1. **Check Event Handlers**
+   ```tsx
+   <WYSIWYGEditor 
+     onFocus={() => console.log('Focused')}
+     onBlur={() => console.log('Blurred')}
+   />
    ```
 
-2. **Virtual keyboard issues**
-   ```javascript
-   // Handle virtual keyboard appearance
-   const handleResize = () => {
-     if (window.visualViewport) {
-       // Adjust editor height
-     }
-   };
+2. **Programmatic Focus**
+   ```tsx
+   const editorRef = useRef();
    
-   window.visualViewport?.addEventListener('resize', handleResize);
+   const focusEditor = () => {
+     // Focus the editor programmatically
+     const editableArea = editorRef.current?.querySelector('[contenteditable]');
+     editableArea?.focus();
+   };
    ```
 
 ## Performance Issues
 
-### Slow Typing Response
+### Slow Initialization
 
-**Problem**: Editor becomes sluggish with large documents.
+**Problem**: Editor takes a long time to initialize.
 
 **Solutions**:
-1. **Debounce content updates**
-   ```javascript
-   const debouncedUpdate = useMemo(() => 
-     debounce((content: string) => {
-       onChange(content);
-     }, 300), [onChange]
-   );
+
+1. **Optimize Toolbar Configuration**
+   ```tsx
+   // Use presets instead of complex configurations
+   <WYSIWYGEditor toolbarConfig={{ preset: 'standard' }} />
    ```
 
-2. **Optimize DOM operations**
-   ```javascript
-   // Batch DOM updates
-   const updateContent = (content: string) => {
-     requestAnimationFrame(() => {
-       if (editorRef.current) {
-         editorRef.current.innerHTML = content;
-       }
-     });
-   };
-   ```
-
-3. **Limit content length**
-   ```javascript
-   const MAX_CONTENT_LENGTH = 50000; // characters
+2. **Lazy Loading**
+   ```tsx
+   const LazyEditor = lazy(() => import('./EditorComponent'));
    
-   const handleContentChange = (content: string) => {
-     if (content.length > MAX_CONTENT_LENGTH) {
-       alert('Content too long. Please reduce the length.');
-       return;
-     }
-     onChange(content);
-   };
+   function App() {
+     return (
+       <Suspense fallback={<div>Loading editor...</div>}>
+         <LazyEditor />
+       </Suspense>
+     );
+   }
    ```
 
 ### Memory Leaks
@@ -290,518 +422,228 @@ This guide helps you diagnose and fix common issues with the WYSIWYG editor.
 **Problem**: Memory usage increases over time.
 
 **Solutions**:
-1. **Clean up event listeners**
+
+1. **Clear Cache When Needed**
    ```tsx
+   import { ToolbarConfigResolver } from "@prmargas/react-wysiwyg-editor";
+   
+   // Clear cache on unmount if needed
    useEffect(() => {
-     const editor = editorRef.current;
-     if (!editor) return;
-
-     const handlers = {
-       input: handleInput,
-       paste: handlePaste,
-       keydown: handleKeyDown
-     };
-
-     Object.entries(handlers).forEach(([event, handler]) => {
-       editor.addEventListener(event, handler);
-     });
-
      return () => {
-       Object.entries(handlers).forEach(([event, handler]) => {
-         editor.removeEventListener(event, handler);
-       });
+       ToolbarConfigResolver.clearCache();
      };
    }, []);
    ```
 
-2. **Clear timers and intervals**
-   ```javascript
-   useEffect(() => {
-     const timer = setInterval(() => {
-       // Auto-save logic
-     }, 5000);
-
-     return () => clearInterval(timer);
-   }, []);
-   ```
-
-## Content Issues
-
-### Formatting Lost on Save/Load
-
-**Problem**: Rich text formatting disappears when content is saved and reloaded.
-
-**Solutions**:
-1. **Proper HTML serialization**
-   ```javascript
-   // Save HTML content, not plain text
-   const saveContent = () => {
-     const htmlContent = editorRef.current?.innerHTML;
-     localStorage.setItem('content', htmlContent || '');
-   };
-   
-   const loadContent = () => {
-     const htmlContent = localStorage.getItem('content');
-     if (htmlContent && editorRef.current) {
-       editorRef.current.innerHTML = htmlContent;
-     }
-   };
-   ```
-
-2. **Content validation**
-   ```javascript
-   const validateHTML = (html: string) => {
-     // Check if HTML is valid
-     const parser = new DOMParser();
-     const doc = parser.parseFromString(html, 'text/html');
-     return !doc.querySelector('parsererror');
-   };
-   ```
-
-### Unwanted HTML Tags
-
-**Problem**: Editor generates unwanted HTML tags or attributes.
-
-**Solutions**:
-1. **Strict content sanitization**
-   ```javascript
-   const sanitizeContent = (html: string) => {
-     const allowedTags = ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a'];
-     const allowedAttributes = {
-       'a': ['href', 'title']
-     };
-     
-     // Remove unwanted tags and attributes
-     return cleanHTML(html, allowedTags, allowedAttributes);
-   };
-   ```
-
-2. **Normalize content on save**
-   ```javascript
-   const normalizeContent = (html: string) => {
-     // Remove empty paragraphs
-     html = html.replace(/<p><\/p>/g, '');
-     
-     // Remove unnecessary attributes
-     html = html.replace(/style="[^"]*"/g, '');
-     
-     return html;
-   };
-   ```
-
-### List Navigation Issues
-
-**Problem**: Enter key doesn't work properly in lists.
-
-**Solutions**:
-1. **Custom list handling**
-   ```javascript
-   const handleKeyDown = (e: KeyboardEvent) => {
-     if (e.key === 'Enter') {
-       const selection = window.getSelection();
-       const range = selection?.getRangeAt(0);
-       const listItem = range?.startContainer.parentElement?.closest('li');
-       
-       if (listItem) {
-         e.preventDefault();
-         // Custom list item creation logic
-       }
-     }
-   };
-   ```
-
-2. **List exit handling**
-   ```javascript
-   const handleDoubleEnter = (e: KeyboardEvent) => {
-     if (e.key === 'Enter' && lastKeyWasEnter) {
-       const listItem = getParentListItem();
-       if (listItem && listItem.textContent?.trim() === '') {
-         e.preventDefault();
-         exitList();
-       }
-     }
-     setLastKeyWasEnter(e.key === 'Enter');
-   };
-   ```
-
-## Styling Problems
-
-### CSS Conflicts
-
-**Problem**: Editor styles conflict with existing page styles.
-
-**Solutions**:
-1. **CSS specificity**
-   ```css
-   /* Use more specific selectors */
-   .wysiwyg-editor .wysiwyg-editable p {
-     margin: 0 0 1em 0;
-   }
-   
-   /* Or use CSS modules */
-   .editor :global(.wysiwyg-editable) {
-     /* styles */
-   }
-   ```
-
-2. **CSS isolation**
-   ```css
-   /* Create a CSS namespace */
-   .wysiwyg-container {
-     /* Reset styles within editor */
-     * {
-       box-sizing: border-box;
-     }
-   }
-   ```
-
-3. **CSS-in-JS solution**
+2. **Avoid Creating New Objects**
    ```tsx
-   const editorStyles = {
-     container: {
-       border: '1px solid #ccc',
-       borderRadius: '4px',
-       // ... other styles
-     }
-   };
+   // ❌ Creates new objects
+   const config = { preset: 'minimal' };
    
-   <div style={editorStyles.container}>
-     <WYSIWYGEditor />
-   </div>
-   ```
-
-### Responsive Design Issues
-
-**Problem**: Editor doesn't work well on different screen sizes.
-
-**Solutions**:
-1. **Responsive toolbar**
-   ```css
-   @media (max-width: 768px) {
-     .wysiwyg-toolbar {
-       flex-wrap: wrap;
-     }
-     
-     .wysiwyg-toolbar-button {
-       min-width: 44px; /* Touch target size */
-       min-height: 44px;
-     }
-   }
-   ```
-
-2. **Flexible editor height**
-   ```css
-   .wysiwyg-editable {
-     min-height: 200px;
-     max-height: 60vh;
-     overflow-y: auto;
-   }
+   // ✅ Reuse objects
+   const CONFIGS = {
+     minimal: { preset: 'minimal' },
+     standard: { preset: 'standard' }
+   };
    ```
 
 ## Integration Issues
 
-### React State Management
+### React Hook Form
 
-**Problem**: Editor state doesn't sync with React component state.
+**Problem**: Editor doesn't work with React Hook Form.
+
+**Solution**:
+```tsx
+import { Controller } from 'react-hook-form';
+
+<Controller
+  name="content"
+  control={control}
+  render={({ field }) => (
+    <WYSIWYGEditor
+      initialContent={field.value || ''}
+      onChange={field.onChange}
+      onBlur={field.onBlur}
+    />
+  )}
+/>
+```
+
+### Next.js SSR Issues
+
+**Problem**: Editor doesn't work with server-side rendering.
+
+**Solution**:
+```tsx
+import dynamic from 'next/dynamic';
+
+const WYSIWYGEditor = dynamic(
+  () => import('@prmargas/react-wysiwyg-editor').then(mod => mod.WYSIWYGEditor),
+  { ssr: false }
+);
+```
+
+### TypeScript Issues
+
+**Problem**: TypeScript errors with editor props.
 
 **Solutions**:
-1. **Controlled component pattern**
+
+1. **Import Types**
    ```tsx
-   const [content, setContent] = useState('');
-   
-   // Sync editor content with React state
-   useEffect(() => {
-     if (editorRef.current && editorRef.current.innerHTML !== content) {
-       editorRef.current.innerHTML = content;
-     }
-   }, [content]);
+   import { 
+     WYSIWYGEditor, 
+     WYSIWYGEditorProps,
+     ToolbarConfig 
+   } from "@prmargas/react-wysiwyg-editor";
    ```
 
-2. **Use refs for immediate updates**
+2. **Type Configuration**
    ```tsx
-   const contentRef = useRef(content);
-   contentRef.current = content;
-   
-   const handleChange = useCallback((newContent: string) => {
-     if (contentRef.current !== newContent) {
-       setContent(newContent);
-     }
-   }, []);
-   ```
-
-### Form Integration
-
-**Problem**: Editor content doesn't submit with forms.
-
-**Solutions**:
-1. **Hidden input field**
-   ```tsx
-   <form onSubmit={handleSubmit}>
-     <WYSIWYGEditor onChange={setContent} />
-     <input type="hidden" name="content" value={content} />
-     <button type="submit">Submit</button>
-   </form>
-   ```
-
-2. **Form data handling**
-   ```javascript
-   const handleSubmit = (e: FormEvent) => {
-     e.preventDefault();
-     const formData = new FormData();
-     formData.append('content', content);
-     // Submit form data
+   const config: ToolbarConfig = {
+     preset: 'minimal'
    };
    ```
 
-### Server-Side Rendering (SSR)
+## Browser Compatibility
 
-**Problem**: Editor doesn't work with SSR frameworks like Next.js.
+### Internet Explorer
 
-**Solutions**:
-1. **Dynamic imports**
-   ```tsx
-   import dynamic from 'next/dynamic';
-   
-   const WYSIWYGEditor = dynamic(
-     () => import('./components/WYSIWYGEditor'),
-     { ssr: false }
-   );
-   ```
+**Problem**: Editor doesn't work in Internet Explorer.
 
-2. **Client-side only rendering**
-   ```tsx
-   const [isClient, setIsClient] = useState(false);
-   
-   useEffect(() => {
-     setIsClient(true);
-   }, []);
-   
-   return (
-     <div>
-       {isClient ? (
-         <WYSIWYGEditor />
-       ) : (
-         <div>Loading editor...</div>
-       )}
-     </div>
-   );
-   ```
+**Solution**: Internet Explorer is not supported. Use a modern browser or polyfills.
 
-## Accessibility Issues
+### Safari Issues
 
-### Screen Reader Support
-
-**Problem**: Screen readers don't announce formatting changes.
+**Problem**: Specific issues in Safari.
 
 **Solutions**:
-1. **ARIA live regions**
-   ```tsx
-   <div aria-live="polite" aria-atomic="true" className="sr-only">
-     {formatAnnouncement}
-   </div>
+
+1. **ContentEditable Issues**
+   ```css
+   /* Add Safari-specific styles */
+   .editable-area {
+     -webkit-user-select: text;
+   }
    ```
 
-2. **Descriptive button labels**
+2. **Focus Issues**
    ```tsx
-   <button
-     aria-label="Apply bold formatting to selected text"
-     aria-pressed={activeFormats.has('bold')}
-   >
-     B
-   </button>
-   ```
-
-### Keyboard Navigation
-
-**Problem**: Users can't navigate the editor with keyboard only.
-
-**Solutions**:
-1. **Proper tab order**
-   ```tsx
-   <div className="wysiwyg-editor">
-     <div className="wysiwyg-toolbar" role="toolbar">
-       {buttons.map((button, index) => (
-         <button key={button.command} tabIndex={0}>
-           {button.icon}
-         </button>
-       ))}
-     </div>
-     <div 
-       className="wysiwyg-editable"
-       contentEditable
-       tabIndex={0}
-     />
-   </div>
-   ```
-
-2. **Keyboard shortcuts**
-   ```javascript
-   const handleKeyDown = (e: KeyboardEvent) => {
-     if (e.ctrlKey || e.metaKey) {
-       switch (e.key) {
-         case 'b':
-           e.preventDefault();
-           executeCommand('bold');
-           break;
-         case 'i':
-           e.preventDefault();
-           executeCommand('italic');
-           break;
-       }
+   // Handle Safari focus differently
+   const handleFocus = () => {
+     if (navigator.userAgent.includes('Safari')) {
+       // Safari-specific focus handling
      }
    };
    ```
 
 ## Development Issues
 
-### TypeScript Errors
+### Hot Reload Issues
 
-**Problem**: TypeScript compilation errors.
+**Problem**: Editor state lost during development hot reload.
 
-**Solutions**:
-1. **Proper type definitions**
-   ```typescript
-   // Make sure all interfaces are properly defined
-   interface WYSIWYGEditorProps {
-     initialContent?: string;
-     placeholder?: string;
-     onChange?: (content: string) => void;
-     onFocus?: () => void;
-     onBlur?: () => void;
-   }
-   ```
+**Solution**:
+```tsx
+// Preserve editor state during development
+const [content, setContent] = useState(() => {
+  if (process.env.NODE_ENV === 'development') {
+    return localStorage.getItem('editor-content') || '';
+  }
+  return '';
+});
 
-2. **DOM type assertions**
-   ```typescript
-   const editor = editorRef.current as HTMLDivElement;
-   const selection = window.getSelection() as Selection;
-   ```
+useEffect(() => {
+  if (process.env.NODE_ENV === 'development') {
+    localStorage.setItem('editor-content', content);
+  }
+}, [content]);
+```
 
-### Build Issues
+### Testing Issues
 
-**Problem**: Build fails or produces errors.
+**Problem**: Editor doesn't work in tests.
 
 **Solutions**:
-1. **Check dependencies**
-   ```bash
-   npm ls
-   npm audit
-   npm update
+
+1. **Mock the Editor**
+   ```tsx
+   // In test setup
+   jest.mock('@prmargas/react-wysiwyg-editor', () => ({
+     WYSIWYGEditor: ({ onChange, initialContent }) => (
+       <textarea 
+         data-testid="wysiwyg-editor"
+         defaultValue={initialContent}
+         onChange={(e) => onChange?.(e.target.value)}
+       />
+     )
+   }));
    ```
 
-2. **Clear build cache**
-   ```bash
-   rm -rf node_modules
-   rm package-lock.json
-   npm install
+2. **Use Testing Library**
+   ```tsx
+   import { render, screen } from '@testing-library/react';
+   
+   test('editor renders', () => {
+     render(<WYSIWYGEditor placeholder="Test editor" />);
+     expect(screen.getByPlaceholderText('Test editor')).toBeInTheDocument();
+   });
    ```
 
-3. **Check for circular dependencies**
-   ```bash
-   npx madge --circular src/
-   ```
+## Debug Mode
 
-## Debugging Tips
-
-### Enable Debug Mode
-
-Add debugging to your editor:
+### Enable Debug Logging
 
 ```tsx
-const DEBUG = process.env.NODE_ENV === 'development';
-
-const debugLog = (message: string, data?: any) => {
-  if (DEBUG) {
-    console.log(`[WYSIWYG Debug] ${message}`, data);
-  }
-};
-
-// Use throughout your code
-debugLog('Content changed', newContent);
-debugLog('Command executed', { command, value, success });
+// Enable debug mode in development
+if (process.env.NODE_ENV === 'development') {
+  // Check cache statistics
+  const stats = ToolbarConfigResolver.getCacheStats();
+  console.log('Toolbar cache stats:', stats);
+  
+  // Log configuration resolution
+  const config = { preset: 'minimal' };
+  const resolved = ToolbarConfigResolver.resolve(config);
+  console.log('Resolved config:', resolved);
+}
 ```
-
-### Browser Developer Tools
-
-1. **Console debugging**
-   ```javascript
-   // Check editor state
-   console.log('Editor element:', editorRef.current);
-   console.log('Selection:', window.getSelection());
-   console.log('Active formats:', activeFormats);
-   ```
-
-2. **DOM inspection**
-   - Right-click on editor → Inspect Element
-   - Check for proper HTML structure
-   - Verify CSS classes are applied
-
-3. **Network tab**
-   - Check if CSS files are loading
-   - Verify API calls for content saving
-
-### Common Debug Commands
-
-```javascript
-// Check if editor is focused
-document.activeElement === editorRef.current
-
-// Get current selection
-window.getSelection()?.toString()
-
-// Check command support
-document.queryCommandSupported('bold')
-
-// Get command state
-document.queryCommandState('bold')
-
-// Get command value
-document.queryCommandValue('formatBlock')
-```
-
-## Getting Help
-
-### Before Asking for Help
-
-1. **Check browser console** for error messages
-2. **Test in different browsers** to isolate browser-specific issues
-3. **Create a minimal reproduction** of the problem
-4. **Check this troubleshooting guide** for similar issues
-
-### Information to Include
-
-When reporting issues, include:
-
-- Browser and version
-- Operating system
-- React version
-- Complete error messages
-- Steps to reproduce
-- Expected vs actual behavior
-- Minimal code example
-
-### Resources
-
-- **Browser compatibility**: [Can I Use - contentEditable](https://caniuse.com/contenteditable)
-- **MDN Documentation**: [contentEditable](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/contentEditable)
-- **React Documentation**: [React Hooks](https://reactjs.org/docs/hooks-intro.html)
 
 ### Performance Monitoring
 
-```javascript
-// Monitor performance
-const measurePerformance = (name: string, fn: Function) => {
-  const start = performance.now();
-  const result = fn();
-  const end = performance.now();
-  console.log(`${name} took ${end - start} milliseconds`);
-  return result;
-};
-
-// Usage
-measurePerformance('Content update', () => {
-  setContent(newContent);
-});
+```tsx
+function PerformanceMonitor({ children }) {
+  useEffect(() => {
+    const observer = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
+        if (entry.name.includes('wysiwyg')) {
+          console.log('Performance entry:', entry);
+        }
+      });
+    });
+    
+    observer.observe({ entryTypes: ['measure'] });
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  return children;
+}
 ```
 
-Remember: Most issues can be resolved by checking the browser console, verifying proper imports, and ensuring event handlers are correctly attached. When in doubt, start with a minimal example and gradually add complexity.
+---
+
+## Getting Help
+
+If you're still experiencing issues:
+
+1. **Check the Console**: Look for error messages and warnings
+2. **Minimal Reproduction**: Create a minimal example that reproduces the issue
+3. **Check Documentation**: Review the configuration guide and examples
+4. **Update Dependencies**: Ensure you're using the latest version
+5. **Browser DevTools**: Use React DevTools to inspect component state
+
+For additional support:
+- Review the [configuration guide](TOOLBAR_CONFIGURATION.md)
+- Check the [examples](TOOLBAR_EXAMPLES.md)
+- See the [migration guide](MIGRATION_GUIDE.md) for upgrade issues

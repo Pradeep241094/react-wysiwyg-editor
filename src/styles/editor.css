@@ -551,13 +551,7 @@
   position: relative;
 }
 
-.toolbar-group:not(:last-child)::after {
-  content: "";
-  width: 1px;
-  height: 24px;
-  background-color: #d1d5db;
-  margin: 0 8px;
-}
+/* Toolbar group separators removed to save space */
 
 .toolbar-button {
   @apply flex items-center justify-center min-w-8 h-8 px-2 border border-transparent rounded bg-transparent cursor-pointer text-sm font-medium text-gray-700 transition-all duration-200 ease-in-out;
@@ -892,6 +886,13 @@
   background-color: #2563eb !important;
   color: #ffffff !important;
   border-color: #1d4ed8 !important;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3) !important;
+  transform: translateY(-1px);
+}
+
+.wysiwyg-editor .toolbar-button.active:hover {
+  background-color: #1d4ed8 !important;
+  border-color: #1e40af !important;
 }
 
 .wysiwyg-editor .placeholder {

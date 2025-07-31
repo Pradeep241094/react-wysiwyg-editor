@@ -388,12 +388,50 @@ export class CommandExecutor {
   }
 
   /**
+   * Check if the current selection contains mixed formatting
+   */
+  private hasMixedFormatting(): boolean {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return false;
+    
+    const range = selection.getRangeAt(0);
+    
+    // If selection spans multiple elements or is very large, consider it mixed
+    if (!range.collapsed) {
+      const selectedText = selection.toString();
+      // If selecting a large portion of content (like select all), treat as mixed
+      if (selectedText.length > 500) return true;
+      
+      // Check if selection spans multiple block elements
+      const startElement = range.startContainer.nodeType === Node.ELEMENT_NODE 
+        ? range.startContainer as Element
+        : range.startContainer.parentElement;
+      const endElement = range.endContainer.nodeType === Node.ELEMENT_NODE 
+        ? range.endContainer as Element
+        : range.endContainer.parentElement;
+        
+      if (startElement && endElement && startElement !== endElement) {
+        // Check if they have different block parents
+        const startBlock = startElement.closest('p, div, h1, h2, h3, h4, h5, h6, li, blockquote');
+        const endBlock = endElement.closest('p, div, h1, h2, h3, h4, h5, h6, li, blockquote');
+        if (startBlock !== endBlock) return true;
+      }
+    }
+    
+    return false;
+  }
+
+  /**
    * Get the current active formatting states
    */
   public getActiveFormats(): Set<string> {
     const activeFormats = new Set<string>();
 
     try {
+      // If selection has mixed formatting, don't highlight any buttons
+      if (this.hasMixedFormatting()) {
+        return activeFormats; // Return empty set
+      }
       // Check basic formatting states
       if (document.queryCommandState('bold')) {
         activeFormats.add('BOLD');
@@ -434,18 +472,37 @@ export class CommandExecutor {
         activeFormats.add('FORMAT_PRE');
       }
 
-      // Check alignment states
-      if (document.queryCommandState('justifyLeft')) {
-        activeFormats.add('JUSTIFY_LEFT');
-      }
-      if (document.queryCommandState('justifyCenter')) {
-        activeFormats.add('JUSTIFY_CENTER');
-      }
-      if (document.queryCommandState('justifyRight')) {
-        activeFormats.add('JUSTIFY_RIGHT');
-      }
-      if (document.queryCommandState('justifyFull')) {
-        activeFormats.add('JUSTIFY_FULL');
+      // Check alignment states - only add if explicitly set
+      // We need to check the actual CSS style rather than queryCommandState for alignment
+      // because queryCommandState('justifyLeft') returns true by default
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        let element = range.commonAncestorContainer;
+        
+        // Find the closest element node
+        while (element && element.nodeType !== Node.ELEMENT_NODE && element.parentNode) {
+          element = element.parentNode;
+        }
+        
+        if (element && element.nodeType === Node.ELEMENT_NODE) {
+          const htmlElement = element as HTMLElement;
+          const computedStyle = window.getComputedStyle(htmlElement);
+          const textAlign = computedStyle.textAlign;
+          
+          // Only highlight alignment buttons if explicitly set (not default)
+          if (textAlign === 'center' || htmlElement.style.textAlign === 'center') {
+            activeFormats.add('JUSTIFY_CENTER');
+          } else if (textAlign === 'right' || htmlElement.style.textAlign === 'right') {
+            activeFormats.add('JUSTIFY_RIGHT');
+          } else if (textAlign === 'justify' || htmlElement.style.textAlign === 'justify') {
+            activeFormats.add('JUSTIFY_FULL');
+          } else if (htmlElement.style.textAlign === 'left') {
+            // Only add JUSTIFY_LEFT if it was explicitly set via style
+            activeFormats.add('JUSTIFY_LEFT');
+          }
+          // Don't add JUSTIFY_LEFT for default left alignment
+        }
       }
 
       // Check list states

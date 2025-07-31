@@ -1,6 +1,6 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { createRef } from 'react';
 import { EditableArea } from '../EditableArea';
 import { EditableAreaProps, SelectionState } from '../../types';
 
@@ -23,7 +23,7 @@ const createMockProps = (overrides: Partial<EditableAreaProps> = {}): EditableAr
   onContentChange: vi.fn(),
   onFocus: vi.fn(),
   onBlur: vi.fn(),
-  editorRef: React.createRef<HTMLDivElement>(),
+  editorRef: createRef<HTMLDivElement>(),
   ...overrides
 });
 
@@ -45,7 +45,7 @@ describe('EditableArea Component', () => {
     });
 
     it('applies ref to the editable div', () => {
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({ editorRef: ref });
       render(<EditableArea {...props} />);
 
@@ -132,7 +132,7 @@ describe('EditableArea Component', () => {
 
     it('sanitizes pasted HTML content', () => {
       const mockOnContentChange = vi.fn();
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({ 
         onContentChange: mockOnContentChange,
         editorRef: ref
@@ -183,7 +183,7 @@ describe('EditableArea Component', () => {
 
     it('handles plain text paste when no HTML is available', () => {
       const mockOnContentChange = vi.fn();
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({ 
         onContentChange: mockOnContentChange,
         editorRef: ref
@@ -322,7 +322,7 @@ describe('EditableArea Component', () => {
     });
 
     it('updates innerHTML when content prop changes', async () => {
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({ content: 'Initial', editorRef: ref });
       const { rerender } = render(<EditableArea {...props} />);
 
@@ -442,7 +442,7 @@ describe('EditableArea Component', () => {
 
     it('handles Enter key in empty list item to exit list', () => {
       const mockOnContentChange = vi.fn();
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({
         onContentChange: mockOnContentChange,
         editorRef: ref
@@ -682,7 +682,7 @@ describe('EditableArea Component', () => {
       vi.mocked(getCurrentSelection).mockReturnValue(mockSelectionState);
       vi.mocked(isSelectionInEditor).mockReturnValue(true);
 
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({ editorRef: ref });
       render(<EditableArea {...props} />);
 
@@ -695,7 +695,7 @@ describe('EditableArea Component', () => {
     });
 
     it('exposes restoreFocus method on editor ref', async () => {
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({ editorRef: ref });
       render(<EditableArea {...props} />);
 
@@ -717,7 +717,7 @@ describe('EditableArea Component', () => {
       vi.mocked(getCurrentSelection).mockReturnValue(mockSelectionState);
       vi.mocked(isSelectionInEditor).mockReturnValue(true);
 
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const props = createMockProps({ editorRef: ref });
       render(<EditableArea {...props} />);
 

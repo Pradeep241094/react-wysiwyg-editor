@@ -1,8 +1,7 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Toolbar } from '../Toolbar';
-import { ToolbarProps } from '../../types';
+import { ToolbarProps, ResolvedToolbarConfig } from '../../types';
 
 describe('Toolbar Component', () => {
   const defaultProps: ToolbarProps = {
@@ -783,6 +782,92 @@ describe('Toolbar Component', () => {
       expect(screen.getByTitle('Italic')).toHaveClass('active');
       expect(screen.getByTitle('Undo')).not.toBeDisabled();
       expect(screen.getByTitle('Redo')).toBeDisabled();
+    });
+  });
+
+  describe('Toolbar Configuration', () => {
+    it('should render only configured buttons when toolbarConfig is provided', () => {
+      const toolbarConfig = {
+        groups: [
+          { name: 'basic', buttons: ['bold', 'italic'] as const }
+        ],
+        enabledButtons: new Set(['bold', 'italic'] as const)
+      };
+      
+      render(<Toolbar {...defaultProps} toolbarConfig={toolbarConfig} />);
+      
+      // Should have configured buttons
+      expect(screen.getByTitle('Bold')).toBeInTheDocument();
+      expect(screen.getByTitle('Italic')).toBeInTheDocument();
+      
+      // Should not have other buttons
+      expect(screen.queryByTitle('Underline')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Heading 1')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Insert Link')).not.toBeInTheDocument();
+    });
+
+    it('should render all default buttons when no toolbarConfig is provided', () => {
+      render(<Toolbar {...defaultProps} />);
+      
+      // Should have default buttons
+      expect(screen.getByTitle('Bold')).toBeInTheDocument();
+      expect(screen.getByTitle('Italic')).toBeInTheDocument();
+      expect(screen.getByTitle('Underline')).toBeInTheDocument();
+      expect(screen.getByTitle('Heading 1')).toBeInTheDocument();
+      expect(screen.getByTitle('Insert Link')).toBeInTheDocument();
+    });
+
+    it('should handle empty configuration gracefully', () => {
+      const toolbarConfig = {
+        groups: [],
+        enabledButtons: new Set()
+      };
+      
+      render(<Toolbar {...defaultProps} toolbarConfig={toolbarConfig} />);
+      
+      // Should not render any buttons
+      expect(screen.queryByTitle('Bold')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Italic')).not.toBeInTheDocument();
+    });
+
+    it('should respect enabledButtons set in configuration', () => {
+      const toolbarConfig = {
+        groups: [
+          { name: 'formatting', buttons: ['bold', 'italic', 'underline'] as const }
+        ],
+        enabledButtons: new Set(['bold', 'italic'] as const) // Only bold and italic enabled
+      };
+      
+      render(<Toolbar {...defaultProps} toolbarConfig={toolbarConfig} />);
+      
+      // Should have enabled buttons
+      expect(screen.getByTitle('Bold')).toBeInTheDocument();
+      expect(screen.getByTitle('Italic')).toBeInTheDocument();
+      
+      // Should not have disabled button (underline is in group but not in enabledButtons)
+      expect(screen.queryByTitle('Underline')).not.toBeInTheDocument();
+    });
+
+    it('should handle multiple groups in configuration', () => {
+      const toolbarConfig = {
+        groups: [
+          { name: 'formatting', buttons: ['bold', 'italic'] as const },
+          { name: 'structure', buttons: ['h1', 'h2'] as const }
+        ],
+        enabledButtons: new Set(['bold', 'italic', 'h1', 'h2'] as const)
+      };
+      
+      render(<Toolbar {...defaultProps} toolbarConfig={toolbarConfig} />);
+      
+      // Should have buttons from both groups
+      expect(screen.getByTitle('Bold')).toBeInTheDocument();
+      expect(screen.getByTitle('Italic')).toBeInTheDocument();
+      expect(screen.getByTitle('Heading 1')).toBeInTheDocument();
+      expect(screen.getByTitle('Heading 2')).toBeInTheDocument();
+      
+      // Should not have other buttons
+      expect(screen.queryByTitle('Underline')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Heading 3')).not.toBeInTheDocument();
     });
   });
 });

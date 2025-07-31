@@ -15,7 +15,8 @@ export const EditableArea: React.FC<EditableAreaProps> = ({
   onBlur,
   editorRef,
   onSelectionChange,
-  onLinkClick
+  onLinkClick,
+  height = '300px'
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [lastSelection, setLastSelection] = useState<SelectionState | null>(null);
@@ -304,6 +305,10 @@ export const EditableArea: React.FC<EditableAreaProps> = ({
         aria-multiline="true"
         aria-describedby="keyboard-shortcuts-help"
         data-placeholder={placeholder}
+        style={{
+          height: typeof height === 'number' ? `${height}px` : height,
+          minHeight: typeof height === 'number' ? `${height}px` : height
+        }}
       />
       {shouldShowPlaceholder() && (
         <div className="placeholder" aria-hidden="true">

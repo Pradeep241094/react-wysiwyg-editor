@@ -12,10 +12,11 @@ A powerful, modern **What You See Is What You Get** editor built with React, Typ
 - 🔗 **Smart Link Management**: Insert, edit, and manage links with preview popup
 - 📷 **Media Support**: Insert and crop images, upload files
 - 🎯 **Accessibility**: Full keyboard navigation and screen reader support
-- � **Responsive**: Works seamlessly on desktop and mobile devices
+- 📱 **Responsive**: Works seamlessly on desktop and mobile devices
 - 🛡️ **Secure**: Built-in content sanitization to prevent XSS attacks
 - ⚡ **TypeScript**: Full type safety and excellent developer experience
-- 🎨 **Customizable**: Flexible styling and toolbar configuration
+- 🎨 **Customizable**: Flexible styling and comprehensive toolbar configuration
+- ⚙️ **Configurable Toolbar**: Choose from presets or create custom button layouts
 
 ## Installation
 
@@ -48,9 +49,57 @@ function App() {
 export default App;
 ```
 
-## 🎯 Advanced Usage 🎨 Rich Text Formatting
+## 🎯 Advanced Usage
 
-### 🔄 Custom Toolbar
+### 🔧 Toolbar Configuration
+
+Customize which toolbar buttons are displayed using the `toolbarConfig` prop:
+
+```tsx
+// Minimal toolbar with only basic formatting
+<WYSIWYGEditor 
+  toolbarConfig={{ preset: 'minimal' }}
+  placeholder="Simple editor..."
+/>
+
+// Custom button selection
+<WYSIWYGEditor 
+  toolbarConfig={{
+    include: {
+      buttons: ['bold', 'italic', 'h1', 'h2', 'bulletList', 'link']
+    }
+  }}
+  placeholder="Custom toolbar..."
+/>
+
+// Category-based configuration
+<WYSIWYGEditor 
+  toolbarConfig={{
+    include: {
+      categories: ['formatting', 'structure', 'lists']
+    }
+  }}
+  placeholder="Category-based toolbar..."
+/>
+```
+
+**Available Presets:**
+- `minimal` - Basic formatting (bold, italic, underline)
+- `standard` - Common editing features
+- `full` - All available buttons (default)
+
+**Available Categories:**
+- `formatting` - Text styling (bold, italic, etc.)
+- `structure` - Headings (h1-h6)
+- `lists` - Lists and indentation
+- `alignment` - Text alignment
+- `media` - Images, files, tables
+- `links` - Link management
+- `advanced` - Colors, fonts, utilities
+
+For complete documentation, see [TOOLBAR_CONFIGURATION.md](TOOLBAR_CONFIGURATION.md).
+
+### 🔄 Custom Toolbar Component
 
 ```tsx
 import { WYSIWYGEditor, AdvancedToolbar } from "@prmargas/react-wysiwyg-editor";
@@ -110,13 +159,36 @@ function EditorWithEvents() {
 | `onChange`       | `(content: string) => void` | -                   | Callback fired when content changes    |
 | `onFocus`        | `() => void`                | -                   | Callback fired when editor gains focus |
 | `onBlur`         | `() => void`                | -                   | Callback fired when editor loses focus |
+| `toolbarConfig`  | `ToolbarConfig`             | -                   | Configuration for toolbar buttons      |
+| `height`         | `string \| number`          | -                   | Height of the editor                   |
 
 ### Available Components
 
-- **WYSIWYGEditor**: Main editor component
+- **WYSIWYGEditor**: Main editor component with configurable toolbar
 - **Toolbar**: Basic toolbar with essential formatting options
 - **AdvancedToolbar**: Extended toolbar with additional features
 - **EditableArea**: The contentEditable area (used internally)
+
+### Toolbar Configuration Types
+
+```tsx
+import { ToolbarConfig, ToolbarCategory, ToolbarButtonType } from "@prmargas/react-wysiwyg-editor";
+
+// Configuration interface
+interface ToolbarConfig {
+  preset?: 'minimal' | 'standard' | 'full';
+  include?: {
+    categories?: ToolbarCategory[];
+    buttons?: ToolbarButtonType[];
+    groups?: ToolbarGroup[];
+  };
+  exclude?: {
+    categories?: ToolbarCategory[];
+    buttons?: ToolbarButtonType[];
+  };
+  order?: (ToolbarButtonType | ToolbarGroup)[];
+}
+```
 
 ### Utility Functions
 
@@ -126,6 +198,7 @@ import {
   contentSanitizer,
   getCurrentSelection,
   restoreSelection,
+  ToolbarConfigResolver,
 } from "@prmargas/react-wysiwyg-editor";
 
 // Execute formatting commands programmatically
@@ -141,6 +214,11 @@ const cleanHtml = contentSanitizer.sanitizeHtml(
 const selection = getCurrentSelection();
 // ... modify content ...
 restoreSelection(selection);
+
+// Resolve toolbar configurations
+const config = { preset: 'minimal' };
+const resolved = ToolbarConfigResolver.resolve(config);
+console.log('Enabled buttons:', Array.from(resolved.enabledButtons));
 ```
 
 ## Styling
@@ -224,6 +302,23 @@ The editor includes built-in content sanitization to prevent XSS attacks:
 - Filters CSS properties to prevent malicious styles
 - Cleans pasted content from external sources
 
+## Documentation
+
+### Comprehensive Guides
+
+- **[Toolbar Configuration Guide](TOOLBAR_CONFIGURATION.md)** - Complete guide to customizing toolbar buttons
+- **[Toolbar Examples](TOOLBAR_EXAMPLES.md)** - Practical examples for common use cases
+- **[TypeScript Interfaces](TYPESCRIPT_INTERFACES.md)** - Complete TypeScript interface documentation
+- **[Migration Guide](MIGRATION_GUIDE.md)** - Upgrading to the new toolbar configuration system
+- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Solutions to common issues
+
+### Quick Links
+
+- [Available toolbar buttons and categories](TOOLBAR_CONFIGURATION.md#categories)
+- [Preset configurations](TOOLBAR_CONFIGURATION.md#presets)
+- [Custom button grouping](TOOLBAR_CONFIGURATION.md#custom-groups)
+- [Performance optimization](TOOLBAR_CONFIGURATION.md#performance-considerations)
+
 ## Contributing
 
 1. Fork the repository
@@ -265,6 +360,7 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 - Content sanitization
 - TypeScript support
 - Accessibility features
+- Bug Fixes
 
 🙏 Acknowledgments
 

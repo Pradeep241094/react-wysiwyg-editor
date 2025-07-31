@@ -6,10 +6,12 @@ export { WYSIWYGEditor } from '../components/WYSIWYGEditor';
 export { Toolbar } from '../components/Toolbar';
 export { AdvancedToolbar } from '../components/AdvancedToolbar';
 export { EditableArea } from '../components/EditableArea';
+export { ImageUploadCropModal } from '../components/ImageUploadCropModal';
 
 // Utility exports
 export { CommandExecutor } from '../utils/commandSystem';
 export { ContentSanitizer, contentSanitizer } from '../utils/contentSanitizer';
+export { ToolbarConfigResolver } from '../utils/toolbarConfigResolver';
 export { 
   getCurrentSelection, 
   restoreSelection, 
@@ -29,7 +31,12 @@ export type {
   ToolbarButton,
   SelectionState,
   EditorCommand,
-  SanitizationConfig
+  SanitizationConfig,
+  ToolbarCategory,
+  ToolbarButtonType,
+  ToolbarGroup,
+  ToolbarConfig,
+  ResolvedToolbarConfig
 } from '../types';
 
 // Export command constants from utils (more comprehensive)

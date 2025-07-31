@@ -7,6 +7,12 @@ export interface WYSIWYGEditorProps {
   onChange?: (content: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  toolbarConfig?: ToolbarConfig;
+  showConfigDropdown?: boolean;
+  configOptions?: Record<string, { name: string; description?: string; config?: ToolbarConfig }>;
+  selectedConfigKey?: string;
+  onConfigChange?: (configKey: string) => void;
+  height?: string | number; // Height of the editor (e.g., '400px', 400, 'auto')
 }
 
 // Toolbar Component Props
@@ -15,6 +21,11 @@ export interface ToolbarProps {
   activeFormats: Set<string>;
   canUndo: boolean;
   canRedo: boolean;
+  toolbarConfig?: ResolvedToolbarConfig;
+  showConfigDropdown?: boolean;
+  configOptions?: Record<string, { name: string; description?: string; config?: ToolbarConfig }>;
+  selectedConfigKey?: string;
+  onConfigChange?: (configKey: string) => void;
 }
 
 // Toolbar Button Configuration
@@ -35,6 +46,7 @@ export interface EditableAreaProps {
   editorRef: React.RefObject<HTMLDivElement>;
   onSelectionChange?: (selectionState: SelectionState) => void;
   onLinkClick?: (event: MouseEvent, linkElement: HTMLAnchorElement) => void;
+  height?: string | number; // Height of the editable area
 }
 
 // Selection State Management
@@ -85,3 +97,49 @@ export const DEFAULT_SANITIZATION_CONFIG: SanitizationConfig = {
     '*': ['style'] // Limited style attributes only
   }
 };
+
+// Toolbar Configuration Types
+export type ToolbarCategory = 
+  | 'formatting' 
+  | 'structure' 
+  | 'lists' 
+  | 'alignment' 
+  | 'media' 
+  | 'links' 
+  | 'advanced';
+
+export type ToolbarButtonType = 
+  | 'bold' | 'italic' | 'underline' | 'strikethrough'
+  | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+  | 'bulletList' | 'numberedList' | 'indent' | 'outdent'
+  | 'alignLeft' | 'alignCenter' | 'alignRight' | 'alignJustify'
+  | 'image' | 'file' | 'table'
+  | 'link' | 'unlink'
+  | 'fontColor' | 'backgroundColor' | 'fontSize' | 'fontFamily'
+  | 'subscript' | 'superscript' | 'specialChar' | 'horizontalRule'
+  | 'findReplace' | 'sourceCode' | 'fullscreen' | 'print'
+  | 'undo' | 'redo' | 'removeFormat';
+
+export interface ToolbarGroup {
+  name: string;
+  buttons: ToolbarButtonType[];
+}
+
+export interface ToolbarConfig {
+  preset?: 'minimal' | 'standard' | 'full';
+  include?: {
+    categories?: ToolbarCategory[];
+    buttons?: ToolbarButtonType[];
+    groups?: ToolbarGroup[];
+  };
+  exclude?: {
+    categories?: ToolbarCategory[];
+    buttons?: ToolbarButtonType[];
+  };
+  order?: (ToolbarButtonType | ToolbarGroup)[];
+}
+
+export interface ResolvedToolbarConfig {
+  groups: ToolbarGroup[];
+  enabledButtons: Set<ToolbarButtonType>;
+}

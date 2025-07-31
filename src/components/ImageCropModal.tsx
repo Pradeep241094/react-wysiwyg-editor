@@ -1,6 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
 
 interface ImageCropModalProps {
   isOpen: boolean;
@@ -114,109 +113,97 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl max-h-[90vh] w-full mx-4 overflow-hidden">
+    <div className="image-crop-modal">
+      <div className="image-crop-modal__content">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Crop Image</h2>
+        <div className="image-crop-modal__header">
+          <h2 className="image-crop-modal__title">Crop Image</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="image-crop-modal__close"
             aria-label="Close"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Aspect Ratio Controls */}
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-gray-700">Aspect Ratio:</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleAspectChange(undefined)}
-                className={`px-3 py-1 text-sm rounded ${
-                  aspect === undefined
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                } transition-colors`}
-              >
-                Free
-              </button>
-              <button
-                onClick={() => handleAspectChange(1)}
-                className={`px-3 py-1 text-sm rounded ${
-                  aspect === 1
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                } transition-colors`}
-              >
-                1:1
-              </button>
-              <button
-                onClick={() => handleAspectChange(16 / 9)}
-                className={`px-3 py-1 text-sm rounded ${
-                  aspect === 16 / 9
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                } transition-colors`}
-              >
-                16:9
-              </button>
-              <button
-                onClick={() => handleAspectChange(4 / 3)}
-                className={`px-3 py-1 text-sm rounded ${
-                  aspect === 4 / 3
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                } transition-colors`}
-              >
-                4:3
-              </button>
-            </div>
+        <div className="image-crop-modal__controls">
+          <div className="image-crop-modal__aspect-controls">
+            <span className="image-crop-modal__aspect-label">Aspect Ratio:</span>
+            <button
+              onClick={() => handleAspectChange(undefined)}
+              className={`image-crop-modal__aspect-button ${
+                aspect === undefined ? 'image-crop-modal__aspect-button--active' : ''
+              }`}
+            >
+              Free
+            </button>
+            <button
+              onClick={() => handleAspectChange(1)}
+              className={`image-crop-modal__aspect-button ${
+                aspect === 1 ? 'image-crop-modal__aspect-button--active' : ''
+              }`}
+            >
+              1:1
+            </button>
+            <button
+              onClick={() => handleAspectChange(16 / 9)}
+              className={`image-crop-modal__aspect-button ${
+                aspect === 16 / 9 ? 'image-crop-modal__aspect-button--active' : ''
+              }`}
+            >
+              16:9
+            </button>
+            <button
+              onClick={() => handleAspectChange(4 / 3)}
+              className={`image-crop-modal__aspect-button ${
+                aspect === 4 / 3 ? 'image-crop-modal__aspect-button--active' : ''
+              }`}
+            >
+              4:3
+            </button>
           </div>
         </div>
 
         {/* Crop Area */}
-        <div className="p-4 max-h-96 overflow-auto">
-          <div className="flex justify-center">
-            <ReactCrop
-              crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(c) => setCompletedCrop(c)}
-              aspect={aspect}
-              minWidth={50}
-              minHeight={50}
-            >
-              <img
-                ref={imgRef}
-                alt="Crop preview"
-                src={imageUrl}
-                style={{ maxHeight: '400px', maxWidth: '100%' }}
-                onLoad={onImageLoad}
-              />
-            </ReactCrop>
-          </div>
+        <div className="image-crop-modal__crop-area">
+          <ReactCrop
+            crop={crop}
+            onChange={(_, percentCrop) => setCrop(percentCrop)}
+            onComplete={(c) => setCompletedCrop(c)}
+            aspect={aspect}
+            minWidth={50}
+            minHeight={50}
+          >
+            <img
+              ref={imgRef}
+              alt="Crop preview"
+              src={imageUrl}
+              style={{ maxHeight: '400px', maxWidth: '100%' }}
+              onLoad={onImageLoad}
+            />
+          </ReactCrop>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50">
-          <div className="text-sm text-gray-600">
+        <div className="image-crop-modal__footer">
+          <div className="image-crop-modal__help-text">
             Drag to select the area you want to crop
           </div>
-          <div className="flex gap-3">
+          <div className="image-crop-modal__actions">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="image-crop-modal__button image-crop-modal__button--secondary"
             >
               Cancel
             </button>
             <button
               onClick={handleCropComplete}
               disabled={!completedCrop || isProcessing}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="image-crop-modal__button image-crop-modal__button--primary"
             >
               {isProcessing ? 'Processing...' : 'Apply Crop'}
             </button>
