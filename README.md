@@ -352,15 +352,43 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Changelog
 
-### 0.0.3
+### 1.0.0
 
-- Basic rich text editing functionality
-- Advanced toolbar with color picker
-- Image and file upload support
-- Content sanitization
-- TypeScript support
-- Accessibility features
-- Bug Fixes
+### Added
+
+- Features
+
+- 🎛️ **Advanced Toolbar Configuration System**: Complete customization control over editor toolbars
+  - **Flexible Configuration Modes**: 
+    - **Presets**: Quick setup with `minimal`, `standard`, and `full` presets
+    - **Category-Based**: Include entire categories like `formatting`, `structure`, `lists`, `alignment`, `media`, `links`, `advanced`
+    - **Individual Buttons**: Precise control with 35+ specific button selections
+    - **Advanced Rules**: Combine include/exclude patterns for complex configurations
+  - **Interactive Toolbar Generator**: Live configuration builder with real-time preview
+    - Visual interface for selecting presets, categories, and individual buttons
+    - Advanced mode with include/exclude rules
+    - Generated configuration code with copy-paste functionality
+    - Live preview showing toolbar changes instantly
+  - **Smart Configuration Processing**: Multi-layer processing (Preset → Include → Exclude → Order → Fallback)
+  - **Custom Button Grouping**: Organize buttons into named groups with separators
+  - **Flexible Ordering**: Control exact button order and arrangement
+
+- 📷 **Enhanced Image Management System**: Professional image handling with advanced features
+  - **Drag & Drop Upload**: Intuitive file dropping with visual feedback and validation
+  - **Advanced Image Cropping**: Professional cropping interface with multiple aspect ratios
+    - Free-form cropping for custom dimensions
+    - Preset aspect ratios: 1:1 (square), 16:9 (widescreen), 4:3 (standard)
+    - Real-time crop preview with precise controls
+    - High-quality image processing with canvas-based cropping
+  - **File Validation & Security**: 
+    - Support for JPEG, PNG, GIF, WebP formats
+    - 10MB file size limit with clear error messaging
+    - File type validation and security checks
+  - **Multi-Step Workflow**: Upload → Crop → Save with back navigation
+  - **Responsive Design**: Mobile-optimized interface for touch devices
+
+  - Bug fixes
+
 
 🙏 Acknowledgments
 
