@@ -5,25 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2025-07-17
-
-### Added
-
-- New features and enhancements
-
-### Changed
-
-- Updates and improvements
-
-### Fixed
-
-- Bug fixes and corrections
-
-### Removed
-
-- Deprecated features removed
-
-## [0.1.2] - 2025-07-29
+## [0.1.2] - 07/30/2025
 
 ### Added
 
@@ -101,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Performance**: Maintained high performance while adding comprehensive validation
 - **Developer Experience**: Improved debugging with more informative error messages and validation feedback
 
-## [0.1.1] - 2025-07-30
+
+## [0.1.1] 07/14/2025
 
 ### Added
 
@@ -138,24 +121,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean separation of concerns
 - Optimized bundle size and performance
 - Production-ready build system
-
-## [0.0.2] - 2024-12-XX
-
-### Added
-
-- Basic WYSIWYG functionality
-- Text formatting (bold, italic, underline)
-- Heading support (H1, H2, H3)
-- List creation (ordered and unordered)
-- Text alignment options
-- Basic link insertion
-- Undo/redo functionality
-
-## [0.0.1] - 2024-12-XX
-
-### Added
-
-- Initial project setup
-- Basic React component structure
-- TypeScript configuration
-- Build system setup
